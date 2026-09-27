@@ -1,0 +1,268 @@
+.admin-product-form-page {
+  min-height: 100vh;
+  padding: 45px 20px;
+  background: #fffaf7;
+}
+
+.admin-product-form-container {
+  width: 100%;
+  max-width: 950px;
+  margin: 0 auto;
+}
+
+
+/* HEADER */
+
+.product-form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 25px;
+  margin-bottom: 30px;
+}
+
+.product-form-small-title {
+  margin: 0 0 8px;
+  color: #999;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.product-form-header h1 {
+  margin: 0 0 8px;
+  color: #292321;
+  font-size: 38px;
+}
+
+.product-form-header p:last-child {
+  margin: 0;
+  color: #777;
+}
+
+
+/* BACK BUTTON */
+
+.product-form-back-button {
+  padding: 12px 17px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: white;
+  color: #292321;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.product-form-back-button:hover {
+  background: #f9e9df;
+}
+
+
+/* MESSAGES */
+
+.product-form-error,
+.product-form-success {
+  margin-bottom: 20px;
+  padding: 14px;
+  border-radius: 8px;
+}
+
+.product-form-error {
+  background: #ffe8e8;
+  color: #b42318;
+}
+
+.product-form-success {
+  background: #eaf7ee;
+  color: #16733b;
+}
+
+
+/* FORM */
+
+.product-form {
+  background: white;
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+}
+
+.form-section {
+  margin-bottom: 30px;
+}
+
+.form-section h2 {
+  margin: 0 0 20px;
+  color: #292321;
+  font-size: 21px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.form-group label {
+  color: #555;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 13px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  outline: none;
+  background: white;
+  color: #292321;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.form-group textarea {
+  resize: vertical;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: #292321;
+}
+
+.form-group input:disabled {
+  background: #f5f5f5;
+  color: #888;
+}
+
+
+/* RATING INFORMATION */
+
+.rating-info-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 30px;
+  padding: 18px;
+  border-radius: 10px;
+  background: #fff8ed;
+  border: 1px solid #f2dfbf;
+}
+
+.rating-info-box > span {
+  font-size: 25px;
+}
+
+.rating-info-box strong {
+  color: #292321;
+  font-size: 14px;
+}
+
+.rating-info-box p {
+  margin: 5px 0 0;
+  color: #777;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+
+/* ACTIONS */
+
+.product-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+}
+
+.form-cancel-button,
+.form-save-button {
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.form-cancel-button {
+  background: white;
+  color: #292321;
+  border: 1px solid #ddd;
+}
+
+.form-save-button {
+  background: #292321;
+  color: white;
+  border: 1px solid #292321;
+}
+
+.form-save-button:hover {
+  opacity: 0.9;
+}
+
+.form-save-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+
+/* LOADING */
+
+.admin-product-form-loading {
+  min-height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #555;
+  font-size: 18px;
+}
+
+
+/* RESPONSIVE */
+
+@media (max-width: 650px) {
+
+  .admin-product-form-page {
+    padding: 30px 15px;
+  }
+
+  .product-form-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .product-form-header h1 {
+    font-size: 30px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .product-form {
+    padding: 20px;
+  }
+
+  .product-form-actions {
+    flex-direction: column;
+  }
+
+  .form-cancel-button,
+  .form-save-button {
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+  }
+
+}

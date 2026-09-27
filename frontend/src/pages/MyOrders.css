@@ -1,0 +1,807 @@
+.my-orders-page {
+  min-height: 100vh;
+  padding: 50px 20px;
+  background: #fffaf7;
+}
+
+.my-orders-container {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+
+/* =========================================
+   HEADER
+========================================= */
+
+.my-orders-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 35px;
+}
+
+.my-orders-small-title {
+  margin: 0 0 8px;
+  color: #999;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.my-orders-header h1 {
+  margin: 0 0 8px;
+  color: #292321;
+  font-size: 38px;
+}
+
+.my-orders-header p {
+  margin: 0;
+  color: #777;
+}
+
+
+/* =========================================
+   BUTTONS
+========================================= */
+
+.back-profile-button {
+  padding: 12px 18px;
+  border-radius: 8px;
+  background: white;
+  color: #292321;
+  text-decoration: none;
+  font-weight: 600;
+  border: 1px solid #ddd;
+}
+
+.orders-shop-button {
+  display: inline-block;
+  padding: 12px 20px;
+  border-radius: 8px;
+  background: #292321;
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  transition: 0.2s ease;
+}
+
+.orders-shop-button:hover {
+  background: #4a403c;
+}
+
+
+/* =========================================
+   ERROR
+========================================= */
+
+.my-orders-error,
+.orders-error {
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  background: #ffe8e8;
+  color: #b42318;
+}
+
+
+/* =========================================
+   LOADING
+========================================= */
+
+.my-orders-loading,
+.orders-loading {
+  min-height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #555;
+  font-size: 18px;
+}
+
+
+/* =========================================
+   NO ORDERS
+========================================= */
+
+.no-orders {
+  padding: 70px 30px;
+  background: white;
+  border-radius: 18px;
+  text-align: center;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+}
+
+.no-orders-icon {
+  font-size: 55px;
+}
+
+.no-orders h2 {
+  margin: 20px 0 10px;
+  color: #292321;
+}
+
+.no-orders p {
+  color: #777;
+}
+
+.shop-now-button {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 13px 22px;
+  border-radius: 8px;
+  background: #292321;
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+
+/* =========================================
+   ORDERS LIST
+========================================= */
+
+.orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+
+/* =========================================
+   ORDER CARD
+========================================= */
+
+.order-card {
+  background: white;
+  border-radius: 16px;
+  padding: 25px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+}
+
+.order-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.order-card-header > div {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.order-card-header span {
+  color: #999;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.order-card-header strong {
+  color: #292321;
+}
+
+.order-label {
+  display: block;
+  color: #999;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.order-card-header h3 {
+  margin: 7px 0 0;
+  color: #292321;
+}
+
+
+/* =========================================
+   ORDER STATUS
+========================================= */
+
+.order-status {
+  padding: 8px 14px;
+  border-radius: 20px;
+  background: #f9e9df;
+  color: #292321;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.status-delivered {
+  background: #e6f7ec;
+  color: #187a3d;
+}
+
+.status-cancelled {
+  background: #ffe8e8;
+  color: #b42318;
+}
+
+.status-pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+
+/* =========================================
+   ORDER INFORMATION
+========================================= */
+
+.order-info {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+  padding: 20px 0;
+}
+
+.order-info div {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.order-info span {
+  color: #999;
+  font-size: 13px;
+}
+
+.order-info strong {
+  color: #292321;
+}
+
+
+/* =========================================
+   PRODUCTS
+========================================= */
+
+.order-products {
+  border-top: 1px solid #eee;
+  border-bottom: 1px solid #eee;
+  padding: 12px 0;
+}
+
+.order-product {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 14px 0;
+  color: #555;
+  border-bottom: 1px solid #f3f3f3;
+}
+
+.order-product:last-child {
+  border-bottom: none;
+}
+
+.order-product-icon {
+  width: 55px;
+  height: 55px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: #fff5ef;
+  font-size: 25px;
+}
+
+.order-product-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.order-product-name {
+  color: #292321;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.order-product-name:hover {
+  text-decoration: underline;
+}
+
+.order-product-info span {
+  color: #888;
+  font-size: 13px;
+}
+
+.order-product-info strong {
+  color: #292321;
+}
+
+
+/* =========================================
+   RATE & REVIEW BUTTON
+========================================= */
+
+.rate-review-button {
+  flex-shrink: 0;
+  padding: 10px 15px;
+  border: 1px solid #292321;
+  border-radius: 8px;
+  background: white;
+  color: #292321;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.rate-review-button:hover {
+  background: #292321;
+  color: white;
+  transform: translateY(-1px);
+}
+
+
+/* =========================================
+   ORDER FOOTER
+========================================= */
+
+.order-card-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: 18px;
+  color: #777;
+  font-size: 13px;
+}
+
+.order-card-footer strong {
+  color: #292321;
+}
+
+.track-order-button {
+  padding: 11px 18px;
+  border-radius: 8px;
+  background: #292321;
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+
+/* =========================================
+   REVIEW MODAL OVERLAY
+========================================= */
+
+.review-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+
+  background: rgba(41, 35, 33, 0.55);
+
+  backdrop-filter: blur(3px);
+}
+
+
+/* =========================================
+   REVIEW MODAL
+========================================= */
+
+.review-modal {
+  position: relative;
+
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+
+  overflow-y: auto;
+
+  padding: 30px;
+
+  background: white;
+  border-radius: 18px;
+
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+
+/* =========================================
+   MODAL CLOSE BUTTON
+========================================= */
+
+.review-modal-close {
+  position: absolute;
+  top: 15px;
+  right: 18px;
+
+  width: 35px;
+  height: 35px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: #f5f5f5;
+  color: #555;
+
+  font-size: 24px;
+  line-height: 1;
+
+  cursor: pointer;
+}
+
+.review-modal-close:hover {
+  background: #eee;
+  color: #292321;
+}
+
+
+/* =========================================
+   REVIEW MODAL HEADER
+========================================= */
+
+.review-modal-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+
+  padding-right: 35px;
+  margin-bottom: 25px;
+}
+
+.review-product-icon {
+  width: 60px;
+  height: 60px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 12px;
+
+  background: #fff5ef;
+
+  font-size: 30px;
+}
+
+.review-modal-header p {
+  margin: 0 0 5px;
+
+  color: #999;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  letter-spacing: 1.5px;
+}
+
+.review-modal-header h2 {
+  margin: 0;
+
+  color: #292321;
+
+  font-size: 21px;
+}
+
+
+/* =========================================
+   REVIEW ERROR / SUCCESS
+========================================= */
+
+.review-form-error {
+  margin-bottom: 20px;
+  padding: 12px 15px;
+
+  border-radius: 8px;
+
+  background: #ffe8e8;
+  color: #b42318;
+
+  font-size: 14px;
+}
+
+.review-form-success {
+  margin-bottom: 20px;
+  padding: 12px 15px;
+
+  border-radius: 8px;
+
+  background: #e6f7ec;
+  color: #187a3d;
+
+  font-size: 14px;
+  font-weight: 600;
+}
+
+
+/* =========================================
+   RATING SECTION
+========================================= */
+
+.rating-section {
+  margin-bottom: 25px;
+}
+
+.rating-section label,
+.review-input-section label {
+  display: block;
+
+  margin-bottom: 10px;
+
+  color: #292321;
+
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.star-rating {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.star {
+  padding: 2px;
+
+  border: none;
+
+  background: transparent;
+
+  color: #d6d0cc;
+
+  font-size: 38px;
+  line-height: 1;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.15s ease,
+    color 0.15s ease;
+}
+
+.star:hover {
+  transform: scale(1.12);
+  color: #f0b429;
+}
+
+.star.active {
+  color: #f0b429;
+}
+
+.rating-text {
+  display: block;
+
+  margin-top: 8px;
+
+  color: #777;
+
+  font-size: 13px;
+}
+
+
+/* =========================================
+   REVIEW TEXTAREA
+========================================= */
+
+.review-input-section {
+  position: relative;
+
+  margin-bottom: 25px;
+}
+
+.review-input-section textarea {
+  width: 100%;
+  min-height: 130px;
+
+  box-sizing: border-box;
+
+  padding: 13px 15px;
+
+  border: 1px solid #ddd;
+  border-radius: 10px;
+
+  background: #fff;
+
+  color: #292321;
+
+  font-family: inherit;
+  font-size: 14px;
+
+  resize: vertical;
+
+  outline: none;
+
+  transition: border-color 0.2s ease;
+}
+
+.review-input-section textarea:focus {
+  border-color: #292321;
+}
+
+.review-input-section textarea::placeholder {
+  color: #aaa;
+}
+
+.review-input-section small {
+  display: block;
+
+  margin-top: 5px;
+
+  text-align: right;
+
+  color: #999;
+
+  font-size: 11px;
+}
+
+
+/* =========================================
+   REVIEW FORM BUTTONS
+========================================= */
+
+.review-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.review-cancel-button,
+.review-submit-button {
+  padding: 11px 18px;
+
+  border-radius: 8px;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.review-cancel-button {
+  border: 1px solid #ddd;
+
+  background: white;
+
+  color: #555;
+}
+
+.review-cancel-button:hover {
+  background: #f5f5f5;
+}
+
+.review-submit-button {
+  border: 1px solid #292321;
+
+  background: #292321;
+
+  color: white;
+}
+
+.review-submit-button:hover {
+  background: #4a403c;
+}
+
+.review-submit-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.review-close-button {
+  width: 100%;
+  margin-top: 10px;
+}
+
+
+/* =========================================
+   RESPONSIVE DESIGN
+========================================= */
+
+@media (max-width: 700px) {
+
+  .my-orders-page {
+    padding: 35px 15px;
+  }
+
+  .my-orders-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .order-card-header {
+    flex-wrap: wrap;
+  }
+
+  .order-info {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .order-product {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .rate-review-button {
+    width: 100%;
+    margin-top: 5px;
+  }
+
+  .order-card-footer {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .review-modal {
+    padding: 25px 20px;
+  }
+
+}
+
+
+/* =========================================
+   SMALL MOBILE
+========================================= */
+
+@media (max-width: 450px) {
+
+  .my-orders-page {
+    padding: 25px 12px;
+  }
+
+  .my-orders-header h1 {
+    font-size: 30px;
+  }
+
+  .order-card {
+    padding: 18px;
+  }
+
+  .order-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .order-info {
+    grid-template-columns: 1fr;
+  }
+
+  .order-product-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 22px;
+  }
+
+  .review-modal {
+    padding: 22px 16px;
+    border-radius: 14px;
+  }
+
+  .review-modal-header h2 {
+    font-size: 18px;
+  }
+
+  .star {
+    font-size: 32px;
+  }
+
+  .review-form-actions {
+    flex-direction: column-reverse;
+  }
+
+  .review-cancel-button,
+  .review-submit-button {
+    width: 100%;
+  }
+
+}

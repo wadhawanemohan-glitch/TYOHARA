@@ -1,0 +1,143 @@
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  background: #fffaf7;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 450px;
+  padding: 45px;
+  background: white;
+  border-radius: 18px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+  text-align: center;
+}
+
+.login-logo {
+  width: 65px;
+  height: 65px;
+  margin: 0 auto 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f9e9df;
+  border-radius: 50%;
+  font-size: 32px;
+}
+
+.login-small-title {
+  margin: 0;
+  color: #999;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.login-card h1 {
+  margin: 12px 0;
+  color: #292321;
+  font-size: 36px;
+}
+
+.login-description {
+  margin-bottom: 30px;
+  color: #777;
+  line-height: 1.6;
+}
+
+.login-form {
+  text-align: left;
+}
+
+.login-form label {
+  display: block;
+  margin: 18px 0 8px;
+  color: #444;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.login-form input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 14px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 15px;
+}
+
+.login-form input:focus {
+  outline: none;
+  border-color: #292321;
+}
+
+.login-submit {
+  width: 100%;
+  margin-top: 25px;
+  padding: 15px;
+  border: none;
+  border-radius: 8px;
+  background: #292321;
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.login-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.login-error {
+  margin-bottom: 15px;
+  padding: 12px;
+  border-radius: 8px;
+  background: #ffe8e8;
+  color: #b42318;
+  font-size: 14px;
+}
+
+.login-divider {
+  margin: 25px 0;
+  border-top: 1px solid #eee;
+  position: relative;
+}
+
+.login-divider span {
+  position: relative;
+  top: -10px;
+  padding: 0 12px;
+  background: white;
+  color: #999;
+  font-size: 12px;
+}
+
+.create-account {
+  color: #777;
+}
+
+.create-account a {
+  margin-left: 5px;
+  color: #292321;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.back-home {
+  display: inline-block;
+  margin-top: 20px;
+  color: #292321;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+@media (max-width: 500px) {
+  .login-card {
+    padding: 30px 20px;
+  }
+}

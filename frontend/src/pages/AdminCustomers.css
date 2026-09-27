@@ -1,0 +1,392 @@
+.admin-customers-page {
+  min-height: 100vh;
+  padding: 45px 20px;
+  background: #fffaf7;
+}
+
+.admin-customers-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+
+/* =========================================
+   HEADER
+========================================= */
+
+.admin-customers-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 25px;
+  margin-bottom: 30px;
+}
+
+.customers-small-title {
+  margin: 0 0 8px;
+  color: #999;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.admin-customers-header h1 {
+  margin: 0 0 8px;
+  color: #292321;
+  font-size: 38px;
+}
+
+.admin-customers-header p:last-child {
+  margin: 0;
+  color: #777;
+}
+
+
+/* =========================================
+   ACTIONS
+========================================= */
+
+.customers-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.customers-dashboard-button {
+  padding: 12px 17px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  background: white;
+  color: #292321;
+  border: 1px solid #ddd;
+}
+
+.customers-dashboard-button:hover {
+  background: #f9e9df;
+}
+
+
+/* =========================================
+   ERROR
+========================================= */
+
+.customers-error {
+  margin-bottom: 20px;
+  padding: 14px;
+  border-radius: 8px;
+  background: #ffe8e8;
+  color: #b42318;
+}
+
+
+/* =========================================
+   SUMMARY
+========================================= */
+
+.customers-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-bottom: 25px;
+}
+
+.customers-summary-card {
+  padding: 25px;
+  background: white;
+  border-radius: 14px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+}
+
+.customers-summary-card span {
+  display: block;
+  margin-bottom: 10px;
+  color: #777;
+  font-size: 14px;
+}
+
+.customers-summary-card strong {
+  display: block;
+  color: #292321;
+  font-size: 30px;
+}
+
+.customers-summary-card small {
+  display: block;
+  margin-top: 7px;
+  color: #aaa;
+}
+
+
+/* =========================================
+   SEARCH SECTION
+========================================= */
+
+.customers-search-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 20px;
+  margin-bottom: 15px;
+}
+
+.search-small-title {
+  margin: 0 0 6px;
+  color: #aaa;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
+
+.customers-search-section h2 {
+  margin: 0;
+  color: #292321;
+  font-size: 24px;
+}
+
+.customers-search-box {
+  width: 320px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 9px;
+}
+
+.customers-search-box span {
+  font-size: 16px;
+}
+
+.customers-search-box input {
+  width: 100%;
+  border: none;
+  outline: none;
+  color: #292321;
+  font-size: 14px;
+  background: transparent;
+}
+
+
+/* =========================================
+   TABLE
+========================================= */
+
+.customers-table-container {
+  overflow-x: auto;
+  background: white;
+  border-radius: 14px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+}
+
+.customers-table {
+  width: 100%;
+  min-width: 950px;
+  border-collapse: collapse;
+}
+
+.customers-table thead {
+  background: #292321;
+  color: white;
+}
+
+.customers-table th {
+  padding: 16px;
+  text-align: left;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.customers-table td {
+  padding: 18px 16px;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+  vertical-align: middle;
+}
+
+.customers-table tbody tr:hover {
+  background: #fffaf7;
+}
+
+
+/* =========================================
+   CUSTOMER NAME
+========================================= */
+
+.customer-name-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.customer-avatar {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #f9e9df;
+  color: #292321;
+  font-weight: 700;
+}
+
+.customer-name-cell > div:last-child {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.customer-name-cell strong {
+  color: #292321;
+}
+
+.customer-name-cell span {
+  color: #aaa;
+  font-size: 11px;
+}
+
+
+/* =========================================
+   EMAIL
+========================================= */
+
+.customer-email {
+  color: #555;
+  font-size: 13px;
+}
+
+
+/* =========================================
+   ROLE
+========================================= */
+
+.customer-role {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 20px;
+  background: #f9e9df;
+  color: #292321;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+
+/* =========================================
+   ORDERS
+========================================= */
+
+.customer-order-count {
+  color: #292321;
+  font-size: 16px;
+}
+
+
+/* =========================================
+   SPENDING
+========================================= */
+
+.customer-spending {
+  color: #292321;
+  font-size: 15px;
+}
+
+
+/* =========================================
+   DATE
+========================================= */
+
+.customer-date {
+  color: #777;
+  font-size: 13px;
+}
+
+
+/* =========================================
+   EMPTY
+========================================= */
+
+.no-customers {
+  padding: 50px !important;
+  text-align: center !important;
+  color: #777;
+}
+
+
+/* =========================================
+   RESULT COUNT
+========================================= */
+
+.customers-result-count {
+  margin-top: 14px;
+  color: #888;
+  font-size: 13px;
+  text-align: right;
+}
+
+
+/* =========================================
+   LOADING
+========================================= */
+
+.admin-customers-loading {
+  min-height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #555;
+  font-size: 18px;
+}
+
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 850px) {
+
+  .admin-customers-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .customers-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .customers-search-section {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .customers-search-box {
+    width: auto;
+  }
+}
+
+
+@media (max-width: 500px) {
+
+  .admin-customers-page {
+    padding: 30px 15px;
+  }
+
+  .customers-actions {
+    width: 100%;
+  }
+
+  .customers-dashboard-button {
+    width: 100%;
+    text-align: center;
+    box-sizing: border-box;
+  }
+
+  .admin-customers-header h1 {
+    font-size: 30px;
+  }
+}
