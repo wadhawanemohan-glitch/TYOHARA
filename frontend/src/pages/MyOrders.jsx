@@ -11,6 +11,8 @@ const MyOrders = () => {
 
   const [orders, setOrders] = useState([]);
 
+  const [products, setProducts] = useState([]);
+
   const [loading, setLoading] =
     useState(true);
 
@@ -131,11 +133,18 @@ const response =
   };
 
 
-  useEffect(() => {
+ useEffect(() => {
+  fetchOrders();
 
-    fetchOrders();
-
-  }, []);
+  fetch(`${import.meta.env.VITE_API_URL}/api/products`)
+    .then((response) => response.json())
+    .then((data) => {
+      setProducts(data.products || []);
+    })
+    .catch((error) => {
+      console.error("Fetch products error:", error);
+    });
+}, []);
 
 
   // =====================================================
@@ -621,8 +630,26 @@ const response =
                       >
 
                         <div className="order-product-icon">
-                          
-                        </div>
+  {(() => {
+    const product = products.find(
+      (p) =>
+        Number(p.productId) === Number(item.productId)
+    );
+
+    return product?.image ? (
+      <img
+        src={product.image}
+        alt={item.name}
+        style={{
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+          borderRadius: "10px"
+        }}
+      />
+    ) : null;
+  })()}
+</div>
 
 
                         <div className="order-product-info">
