@@ -700,7 +700,7 @@ function Home() {
 
 
         <div className="copyright">
-          � 2026 TYOHARA.
+          ï¿½ 2026 TYOHARA.
           All rights reserved.
         </div>
 
@@ -845,7 +845,3 @@ function App() {
 }
 
 export default App;
-
-
-
-
