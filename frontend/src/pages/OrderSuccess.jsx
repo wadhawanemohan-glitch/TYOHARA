@@ -56,7 +56,9 @@ function OrderSuccess() {
 
       <div className="success-card">
 
-        <div className="success-icon">`r`n            &#10003;`r`n          </div>
+        <div className="success-icon">
+  &#10003;
+</div>
 
         <p className="success-label">
           THANK YOU FOR SHOPPING WITH TYOHARA
