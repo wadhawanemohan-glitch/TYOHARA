@@ -390,7 +390,7 @@ if (selectedCategory === "All") {
 
                   <div className="shop-rating">
 
-                    ? {product.rating}
+                    {"★"} {product.rating}
 
                     <span>
                       {" "}
