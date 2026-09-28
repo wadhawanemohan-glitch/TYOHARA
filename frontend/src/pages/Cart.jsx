@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import "./Cart.css";
@@ -8,16 +9,17 @@ function Cart() {
     increaseQuantity,
     decreaseQuantity,
     removeFromCart,
-    cartTotal
+    cartTotal,
   } = useCart();
+
+  const formatPrice = (price) => {
+    return `₹${Number(price || 0).toLocaleString("en-IN")}`;
+  };
 
   if (cartItems.length === 0) {
     return (
       <div className="empty-cart">
-
-        <div className="empty-cart-icon">
-          
-        </div>
+        <div className="empty-cart-icon">🛍️</div>
 
         <h1>Your Cart is Empty</h1>
 
@@ -26,112 +28,84 @@ function Cart() {
         </p>
 
         <Link to="/shop" className="shop-now-button">
-          Start Shopping 
+          Start Shopping
         </Link>
-
       </div>
     );
   }
 
   const deliveryCharge = cartTotal >= 1000 ? 0 : 60;
-
   const finalTotal = cartTotal + deliveryCharge;
 
   return (
     <div className="cart-page">
-
+      {/* Header */}
       <div className="cart-header">
         <p>YOUR SHOPPING BAG</p>
         <h1>Your Cart</h1>
       </div>
 
       <div className="cart-layout">
-
         {/* Cart Items */}
-
         <div className="cart-items">
-
           {cartItems.map((item) => (
             <div className="cart-item" key={item.id}>
-
               <div className="cart-item-image">
-  <img
-    src={item.image}
-    alt={item.name}
-  />
-</div>
+                <img
+                  src={item.image}
+                  alt={item.name}
+                />
+              </div>
 
               <div className="cart-item-info">
+                <span>{item.type}</span>
 
-                <span>
-                  {item.type}
-                </span>
+                <h2>{item.name}</h2>
 
-                <h2>
-                  {item.name}
-                </h2>
-
-                <p>
-                  {item.price}
-                </p>
+                <p>{formatPrice(item.price)}</p>
 
                 <button
                   className="remove-button"
-                  onClick={() =>
-                    removeFromCart(item.id)
-                  }
+                  onClick={() => removeFromCart(item.id)}
                 >
                   Remove
                 </button>
-
               </div>
 
               <div className="cart-item-actions">
-
                 <div className="cart-quantity">
-
                   <button
-                    onClick={() =>
-                      decreaseQuantity(item.id)
-                    }
+                    onClick={() => decreaseQuantity(item.id)}
+                    aria-label="Decrease quantity"
                   >
-                    
+                    −
                   </button>
 
-                  <span>
-                    {item.quantity}
-                  </span>
+                  <span>{item.quantity}</span>
 
                   <button
-                    onClick={() =>
-                      increaseQuantity(item.id)
-                    }
+                    onClick={() => increaseQuantity(item.id)}
+                    aria-label="Increase quantity"
                   >
                     +
                   </button>
-
                 </div>
 
                 <strong>
-                  {item.price * item.quantity}
+                  {formatPrice(item.price * item.quantity)}
                 </strong>
-
               </div>
-
             </div>
           ))}
-
         </div>
 
-        {/* Summary */}
-
+        {/* Order Summary */}
         <div className="cart-summary">
-
           <h2>Order Summary</h2>
 
           <div className="summary-row">
             <span>Subtotal</span>
-            <strong>{cartTotal}</strong>
+            <strong>{formatPrice(cartTotal)}</strong>
           </div>
 
           <div className="summary-row">
@@ -140,48 +114,38 @@ function Cart() {
             <strong>
               {deliveryCharge === 0
                 ? "FREE"
-                : `{deliveryCharge}`}
+                : formatPrice(deliveryCharge)}
             </strong>
           </div>
 
           {deliveryCharge > 0 && (
             <p className="free-delivery-message">
-              Add {1000 - cartTotal} more for FREE delivery.
+              Add {formatPrice(1000 - cartTotal)} more for FREE delivery.
             </p>
           )}
 
           <div className="summary-total">
             <span>Total</span>
-            <strong>{finalTotal}</strong>
+            <strong>{formatPrice(finalTotal)}</strong>
           </div>
 
-         <Link
-  to="/checkout"
-  className="checkout-button"
->
-  Proceed to Checkout 
-</Link>
+          <Link
+            to="/checkout"
+            className="checkout-button"
+          >
+            Proceed to Checkout
+          </Link>
 
           <Link
             to="/shop"
             className="continue-shopping-button"
           >
-             Continue Shopping
+            Continue Shopping
           </Link>
-
         </div>
-
       </div>
-
     </div>
   );
 }
 
 export default Cart;
-
-
-
-
-
-
-
