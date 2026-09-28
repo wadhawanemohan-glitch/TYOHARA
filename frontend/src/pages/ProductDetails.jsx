@@ -336,8 +336,8 @@ function ProductDetails() {
 
         <div className="product-details-image">
          <img
-  src={item.image}
-  alt={item.name}
+  src={product.image}
+  alt={product.name}
 />
         </div>
 
@@ -718,6 +718,7 @@ function ProductDetails() {
 
 
 export default ProductDetails;
+
 
 
 
