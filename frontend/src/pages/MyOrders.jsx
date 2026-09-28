@@ -382,13 +382,8 @@ const response =
   // =====================================================
 
   const formatPrice = (price) => {
-
-    return `{Number(
-      price || 0
-    ).toLocaleString("en-IN")}`;
-
-  };
-
+  return Number(price || 0).toLocaleString("en-IN");
+};
 
   // =====================================================
   // FORMAT DATE
