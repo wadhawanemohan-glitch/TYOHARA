@@ -97,7 +97,7 @@ function OrderSuccess() {
 
           <div>
             <span>Total Amount</span>
-            <strong>&#8377;{Number(order.total).toLocaleString("en-IN")}</strong>
+            <strong>{order.total}</strong>
           </div>
 
           <div>

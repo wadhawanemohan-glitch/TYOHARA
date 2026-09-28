@@ -522,7 +522,7 @@ function Home() {
 
                 <div className="rating">
 
-                  &#9733; {product.rating}
+                  ? {product.rating}
 
                   <span>
                     {" "}
@@ -533,7 +533,7 @@ function Home() {
 
 
                 <div className="price">
-                  &#8377;{Number(product.price).toLocaleString("en-IN")}
+                  {product.price}
                 </div>
 
 
@@ -585,7 +585,9 @@ function Home() {
 
           <div className="feature">
 
-            <div>&#128666;</div>
+            <div>
+              ??
+            </div>
 
             <h3>
               Fast Delivery
@@ -601,7 +603,9 @@ function Home() {
 
           <div className="feature">
 
-            <div>&#127873;</div>
+            <div>
+              ??
+            </div>
 
             <h3>
               Beautiful Packaging
@@ -617,7 +621,7 @@ function Home() {
 
           <div className="feature">
 
-              <div>&#128274;</div>
+              <div>??</div>
 
 
             <h3>
@@ -634,7 +638,9 @@ function Home() {
 
           <div className="feature">
 
-            <div>&#10084;</div>
+            <div>
+              ??
+            </div>
 
             <h3>
               Made With Love
@@ -694,7 +700,7 @@ function Home() {
 
 
         <div className="copyright">
-          ÃƒÂ¯Ã‚Â¿Ã‚Â½ 2026 TYOHARA.
+          ï¿½ 2026 TYOHARA.
           All rights reserved.
         </div>
 
