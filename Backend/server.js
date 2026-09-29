@@ -4,6 +4,7 @@ const authRoutes =
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
+const paymentRoutes = require("./routes/paymentRoutes");
 
 const connectMongoDB = require("./config/mongodb");
 const productRoutes = require("./routes/productRoutes");
@@ -32,6 +33,7 @@ app.get("/api/test", (req, res) => {
 
 app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/payment", paymentRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/customers", customerRoutes);
 app.use("/api/reviews", reviewRoutes);

@@ -4,8 +4,6 @@ import { Link } from "react-router-dom";
 
 import { useCart } from "../context/CartContext";
 
-import QRCode from "react-qr-code";
-
 import "./Checkout.css";
 
 
@@ -33,22 +31,21 @@ function Checkout() {
     useState("cod");
 
 
-  const [paymentDetails, setPaymentDetails] =
-    useState({
-      upiId: "",
-      cardNumber: "",
-      cardName: "",
-      expiry: "",
-      cvv: ""
-    });
+  const [processingPayment, setProcessingPayment] =
+    useState(false);
 
 
   const deliveryCharge =
     cartTotal >= 1000 ? 0 : 60;
 
+
   const finalTotal =
     cartTotal + deliveryCharge;
 
+
+  // =====================================================
+  // FORM CHANGE
+  // =====================================================
 
   const handleChange = (event) => {
 
@@ -57,6 +54,7 @@ function Checkout() {
       value
     } = event.target;
 
+
     setFormData({
       ...formData,
       [name]: value
@@ -64,6 +62,10 @@ function Checkout() {
 
   };
 
+
+  // =====================================================
+  // PAYMENT METHOD CHANGE
+  // =====================================================
 
   const handlePaymentChange = (event) => {
 
@@ -74,110 +76,65 @@ function Checkout() {
   };
 
 
-  const handlePaymentDetailsChange = (
-    event
-  ) => {
+  // =====================================================
+  // LOAD RAZORPAY CHECKOUT
+  // =====================================================
 
-    const {
-      name,
-      value
-    } = event.target;
+  const loadRazorpay = () => {
 
-    setPaymentDetails({
-      ...paymentDetails,
-      [name]: value
+    return new Promise((resolve) => {
+
+      const existingScript =
+        document.querySelector(
+          'script[src="https://checkout.razorpay.com/v1/checkout.js"]'
+        );
+
+
+      if (existingScript) {
+
+        resolve(true);
+
+        return;
+
+      }
+
+
+      const script =
+        document.createElement("script");
+
+      script.src =
+        "https://checkout.razorpay.com/v1/checkout.js";
+
+      script.onload = () => {
+
+        resolve(true);
+
+      };
+
+      script.onerror = () => {
+
+        resolve(false);
+
+      };
+
+
+      document.body.appendChild(script);
+
     });
 
   };
 
 
-  const handleSubmit = async (event) => {
+  // =====================================================
+  // CREATE TYOHARA ORDER OBJECT
+  // =====================================================
 
-    event.preventDefault();
+  const createOrderData = (
+    orderId,
+    selectedPayment
+  ) => {
 
-
-    /*
-      Validate UPI
-    */
-
-    if (paymentMethod === "upi") {
-
-      if (!paymentDetails.upiId.trim()) {
-
-        alert(
-          "Please enter your UPI ID."
-        );
-
-        return;
-      }
-
-    }
-
-
-    /*
-      Validate Card
-    */
-
-    if (paymentMethod === "card") {
-
-      if (
-        !paymentDetails.cardNumber.trim() ||
-        !paymentDetails.cardName.trim() ||
-        !paymentDetails.expiry.trim() ||
-        !paymentDetails.cvv.trim()
-      ) {
-
-        alert(
-          "Please enter all card details."
-        );
-
-        return;
-      }
-
-    }
-
-
-    const orderId =
-      "GW" +
-      Date.now()
-        .toString()
-        .slice(-8);
-
-
-    /*
-      Only payment method is saved.
-      Card number, CVV and UPI ID
-      are NOT saved in MongoDB.
-    */
-
-    let selectedPayment = "";
-
-
-    if (paymentMethod === "cod") {
-
-      selectedPayment =
-        "Cash on Delivery";
-
-    }
-
-
-    if (paymentMethod === "upi") {
-
-      selectedPayment =
-        "UPI";
-
-    }
-
-
-    if (paymentMethod === "card") {
-
-      selectedPayment =
-        "Credit / Debit Card";
-
-    }
-
-
-    const order = {
+    return {
 
       orderId,
 
@@ -218,55 +175,470 @@ function Checkout() {
 
     };
 
+  };
+
+
+  // =====================================================
+  // SAVE TYOHARA ORDER
+  // =====================================================
+
+  const saveOrder = async (
+    order
+  ) => {
+
+    const response =
+      await fetch(
+        `${import.meta.env.VITE_API_URL}/api/orders`,
+        {
+
+          method: "POST",
+
+          headers: {
+
+            "Content-Type":
+              "application/json"
+
+          },
+
+          body:
+            JSON.stringify(order)
+
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    if (
+      !response.ok ||
+      !data.success
+    ) {
+
+      throw new Error(
+        data.message ||
+        "Failed to place order."
+      );
+
+    }
+
+
+    return data;
+
+  };
+
+
+  // =====================================================
+  // COD ORDER
+  // =====================================================
+
+  const handleCODOrder = async (
+    orderId
+  ) => {
+
+    const order =
+      createOrderData(
+        orderId,
+        "Cash on Delivery"
+      );
+
+
+    await saveOrder(order);
+
+
+    localStorage.setItem(
+      "giftwala-last-order",
+      JSON.stringify(order)
+    );
+
+
+    clearCart();
+
+
+    window.location.href =
+      `/order-success/${orderId}`;
+
+  };
+
+
+  // =====================================================
+  // RAZORPAY PAYMENT
+  // =====================================================
+
+  const handleOnlinePayment = async (
+    orderId
+  ) => {
+
+    setProcessingPayment(true);
+
 
     try {
 
-      const response =
-        await fetch(
-          `${import.meta.env.VITE_API_URL}/api/orders`,
-          {
-            method: "POST",
+      // -------------------------------------------------
+      // LOAD RAZORPAY SCRIPT
+      // -------------------------------------------------
 
-            headers: {
-              "Content-Type":
-                "application/json"
-            },
-
-            body:
-              JSON.stringify(order)
-          }
-        );
+      const razorpayLoaded =
+        await loadRazorpay();
 
 
-      const data =
-        await response.json();
-
-
-      if (
-        !response.ok ||
-        !data.success
-      ) {
+      if (!razorpayLoaded) {
 
         throw new Error(
-          data.message ||
-          "Failed to place order"
+          "Razorpay Checkout could not be loaded."
         );
 
       }
 
 
-      localStorage.setItem(
-        "giftwala-last-order",
-        JSON.stringify(order)
+      // -------------------------------------------------
+      // CREATE RAZORPAY ORDER
+      // -------------------------------------------------
+
+      const razorpayResponse =
+        await fetch(
+          `${import.meta.env.VITE_API_URL}/api/payment/create-order`,
+          {
+
+            method: "POST",
+
+            headers: {
+
+              "Content-Type":
+                "application/json"
+
+            },
+
+            body:
+              JSON.stringify({
+                amount: finalTotal
+              })
+
+          }
+        );
+
+
+      const razorpayData =
+        await razorpayResponse.json();
+
+
+      if (
+        !razorpayResponse.ok ||
+        !razorpayData.success
+      ) {
+
+        throw new Error(
+          razorpayData.message ||
+          "Unable to create payment order."
+        );
+
+      }
+
+
+      // -------------------------------------------------
+      // RAZORPAY CHECKOUT OPTIONS
+      // -------------------------------------------------
+
+      const options = {
+
+        key:
+          razorpayData.key,
+
+        amount:
+          razorpayData.order.amount,
+
+        currency:
+          razorpayData.order.currency,
+
+        name:
+          "TYOHARA",
+
+        description:
+          "Festival Gift Purchase",
+
+        order_id:
+          razorpayData.order.id,
+
+
+        prefill: {
+
+          name:
+            formData.name,
+
+          email:
+            formData.email,
+
+          contact:
+            formData.phone
+
+        },
+
+
+        notes: {
+
+          tyohara_order_id:
+            orderId
+
+        },
+
+
+        theme: {
+
+          color:
+            "#8b5cf6"
+
+        },
+
+
+        handler:
+          async function (
+            response
+          ) {
+
+            try {
+
+              // -----------------------------------------
+              // VERIFY PAYMENT ON BACKEND
+              // -----------------------------------------
+
+              const verifyResponse =
+                await fetch(
+                  `${import.meta.env.VITE_API_URL}/api/payment/verify`,
+                  {
+
+                    method: "POST",
+
+                    headers: {
+
+                      "Content-Type":
+                        "application/json"
+
+                    },
+
+                    body:
+                      JSON.stringify({
+
+                        razorpay_order_id:
+                          response.razorpay_order_id,
+
+                        razorpay_payment_id:
+                          response.razorpay_payment_id,
+
+                        razorpay_signature:
+                          response.razorpay_signature
+
+                      })
+
+                  }
+                );
+
+
+              const verifyData =
+                await verifyResponse.json();
+
+
+              if (
+                !verifyResponse.ok ||
+                !verifyData.success
+              ) {
+
+                throw new Error(
+                  verifyData.message ||
+                  "Payment verification failed."
+                );
+
+              }
+
+
+              // -----------------------------------------
+              // SAVE TYOHARA ORDER
+              // -----------------------------------------
+
+              const order =
+                createOrderData(
+                  orderId,
+                  paymentMethod === "upi"
+                    ? "UPI"
+                    : "Credit / Debit Card"
+                );
+
+
+              await saveOrder(order);
+
+
+              // -----------------------------------------
+              // SAVE LAST ORDER
+              // -----------------------------------------
+
+              localStorage.setItem(
+                "giftwala-last-order",
+                JSON.stringify({
+
+                  ...order,
+
+                  razorpayOrderId:
+                    response.razorpay_order_id,
+
+                  razorpayPaymentId:
+                    response.razorpay_payment_id
+
+                })
+              );
+
+
+              // -----------------------------------------
+              // CLEAR CART
+              // -----------------------------------------
+
+              clearCart();
+
+
+              // -----------------------------------------
+              // ORDER SUCCESS
+              // -----------------------------------------
+
+              window.location.href =
+                `/order-success/${orderId}`;
+
+            } catch (error) {
+
+              console.error(
+                "Payment verification error:",
+                error
+              );
+
+
+              alert(
+                error.message ||
+                "Payment verification failed."
+              );
+
+
+              setProcessingPayment(false);
+
+            }
+
+          },
+
+
+        modal: {
+
+          ondismiss:
+            function () {
+
+              setProcessingPayment(false);
+
+            }
+
+        }
+
+      };
+
+
+      const razorpay =
+        new window.Razorpay(
+          options
+        );
+
+
+      razorpay.on(
+        "payment.failed",
+        function (response) {
+
+          console.error(
+            "Razorpay payment failed:",
+            response.error
+          );
+
+
+          alert(
+            response.error?.description ||
+            "Payment failed. Please try again."
+          );
+
+
+          setProcessingPayment(false);
+
+        }
       );
 
 
-      clearCart();
+      razorpay.open();
 
 
-      window.location.href =
-        `/order-success/${orderId}`;
+    } catch (error) {
 
+      console.error(
+        "Razorpay error:",
+        error
+      );
+
+
+      alert(
+        error.message ||
+        "Unable to start payment."
+      );
+
+
+      setProcessingPayment(false);
+
+    }
+
+  };
+
+
+  // =====================================================
+  // SUBMIT
+  // =====================================================
+
+  const handleSubmit = async (
+    event
+  ) => {
+
+    event.preventDefault();
+
+
+    if (processingPayment) {
+
+      return;
+
+    }
+
+
+    const orderId =
+      "GW" +
+      Date.now()
+        .toString()
+        .slice(-8);
+
+
+    try {
+
+      // -------------------------------------------------
+      // CASH ON DELIVERY
+      // -------------------------------------------------
+
+      if (
+        paymentMethod === "cod"
+      ) {
+
+        await handleCODOrder(
+          orderId
+        );
+
+        return;
+
+      }
+
+
+      // -------------------------------------------------
+      // RAZORPAY
+      // -------------------------------------------------
+
+      await handleOnlinePayment(
+        orderId
+      );
 
     } catch (error) {
 
@@ -275,14 +647,23 @@ function Checkout() {
         error
       );
 
+
       alert(
+        error.message ||
         "Unable to place order. Please try again."
       );
+
+
+      setProcessingPayment(false);
 
     }
 
   };
 
+
+  // =====================================================
+  // EMPTY CART
+  // =====================================================
 
   if (cartItems.length === 0) {
 
@@ -291,7 +672,7 @@ function Checkout() {
       <div className="checkout-empty">
 
         <h1>
-          Your cart is empty &#128722;
+          Your cart is empty 🛒
         </h1>
 
         <p>
@@ -300,7 +681,7 @@ function Checkout() {
         </p>
 
         <Link to="/shop">
-          Continue Shopping 
+          Continue Shopping →
         </Link>
 
       </div>
@@ -310,10 +691,16 @@ function Checkout() {
   }
 
 
+  // =====================================================
+  // PAGE
+  // =====================================================
+
   return (
 
     <div className="checkout-page">
 
+
+      {/* HEADER */}
 
       <div className="checkout-header">
 
@@ -331,7 +718,9 @@ function Checkout() {
       <div className="checkout-layout">
 
 
-        {/* CUSTOMER DETAILS */}
+        {/* =================================================
+            CUSTOMER DETAILS
+        ================================================= */}
 
         <form
           className="checkout-form"
@@ -349,6 +738,7 @@ function Checkout() {
 
 
             <div className="form-grid">
+
 
               <div className="form-group">
 
@@ -385,6 +775,7 @@ function Checkout() {
 
               </div>
 
+
             </div>
 
 
@@ -408,7 +799,9 @@ function Checkout() {
           </div>
 
 
-          {/* DELIVERY ADDRESS */}
+          {/* =================================================
+              DELIVERY ADDRESS
+          ================================================= */}
 
           <div className="checkout-section">
 
@@ -436,6 +829,7 @@ function Checkout() {
 
 
             <div className="form-grid">
+
 
               <div className="form-group">
 
@@ -496,7 +890,9 @@ function Checkout() {
           </div>
 
 
-          {/* PAYMENT METHOD */}
+          {/* =================================================
+              PAYMENT METHOD
+          ================================================= */}
 
           <div className="checkout-section">
 
@@ -505,7 +901,7 @@ function Checkout() {
             </h2>
 
 
-            {/* CASH ON DELIVERY */}
+            {/* COD */}
 
             <label
               className={`payment-option ${
@@ -531,7 +927,7 @@ function Checkout() {
               <div className="payment-option-content">
 
                 <div className="payment-icon">
-                  
+                  💵
                 </div>
 
 
@@ -578,7 +974,7 @@ function Checkout() {
               <div className="payment-option-content">
 
                 <div className="payment-icon">
-                  
+                  📱
                 </div>
 
 
@@ -589,7 +985,7 @@ function Checkout() {
                   </strong>
 
                   <span>
-                    Pay using UPI ID
+                    Pay securely with Razorpay
                   </span>
 
                 </div>
@@ -597,79 +993,6 @@ function Checkout() {
               </div>
 
             </label>
-
-
-            {/* UPI DETAILS */}
-
-            {paymentMethod === "upi" && (
-
-  <div className="payment-details-box upi-payment-box">
-
-    <div className="upi-payment-content">
-
-      <div className="upi-qr-section">
-
-        <QRCode
-          value={`upi://pay?pa=tyoharagifts@upi&pn=TYOHARA&am=${finalTotal}&cu=INR`}
-          size={180}
-          bgColor="#ffffff"
-          fgColor="#000000"
-          level="H"
-        />
-
-      </div>
-
-
-      <div className="upi-payment-info">
-
-        <h3>
-          Scan QR Code to Pay
-        </h3>
-
-        <p>
-          Open Google Pay, PhonePe, Paytm,
-          BHIM or another UPI app and scan this QR code.
-        </p>
-
-
-        <div className="upi-amount">
-
-          <span>
-            Amount
-          </span>
-
-          <strong>
-            {finalTotal}
-          </strong>
-
-        </div>
-
-
-        <div className="upi-id-display">
-
-          <span>
-            UPI ID
-          </span>
-
-          <strong>
-            tyoharagifts@upi
-          </strong>
-
-        </div>
-
-
-        <small className="upi-instruction">
-          After successful payment, click
-          "Place Order" below.
-        </small>
-
-      </div>
-
-    </div>
-
-  </div>
-
-)}
 
 
             {/* CARD */}
@@ -698,7 +1021,7 @@ function Checkout() {
               <div className="payment-option-content">
 
                 <div className="payment-icon">
-                  
+                  💳
                 </div>
 
 
@@ -709,7 +1032,7 @@ function Checkout() {
                   </strong>
 
                   <span>
-                    Pay securely using your card
+                    Pay securely with Razorpay
                   </span>
 
                 </div>
@@ -719,122 +1042,15 @@ function Checkout() {
             </label>
 
 
-            {/* CARD DETAILS */}
-
-            {paymentMethod === "card" && (
-
-              <div className="payment-details-box">
-
-
-                <div className="form-group">
-
-                  <label>
-                    Card Number
-                  </label>
-
-                  <input
-                    type="text"
-                    name="cardNumber"
-                    value={
-                      paymentDetails.cardNumber
-                    }
-                    onChange={
-                      handlePaymentDetailsChange
-                    }
-                    placeholder="1234 5678 9012 3456"
-                    maxLength="19"
-                    inputMode="numeric"
-                  />
-
-                </div>
-
-
-                <div className="form-group">
-
-                  <label>
-                    Card Holder Name
-                  </label>
-
-                  <input
-                    type="text"
-                    name="cardName"
-                    value={
-                      paymentDetails.cardName
-                    }
-                    onChange={
-                      handlePaymentDetailsChange
-                    }
-                    placeholder="Name on card"
-                  />
-
-                </div>
-
-
-                <div className="card-details-grid">
-
-                  <div className="form-group">
-
-                    <label>
-                      Expiry Date
-                    </label>
-
-                    <input
-                      type="text"
-                      name="expiry"
-                      value={
-                        paymentDetails.expiry
-                      }
-                      onChange={
-                        handlePaymentDetailsChange
-                      }
-                      placeholder="MM/YY"
-                      maxLength="5"
-                    />
-
-                  </div>
-
-
-                  <div className="form-group">
-
-                    <label>
-                      CVV
-                    </label>
-
-                    <input
-                      type="password"
-                      name="cvv"
-                      value={
-                        paymentDetails.cvv
-                      }
-                      onChange={
-                        handlePaymentDetailsChange
-                      }
-                      placeholder="123"
-                      maxLength="4"
-                      inputMode="numeric"
-                    />
-
-                  </div>
-
-                </div>
-
-
-                <small>
-                   Card details are not stored by TYOHARA.
-                </small>
-
-
-              </div>
-
-            )}
-
+            {/* SECURITY NOTE */}
 
             <div className="payment-security-note">
 
-              
+              🔒
 
               <span>
-                Your payment information is kept secure.
+                Payments are securely processed by Razorpay.
+                TYOHARA does not store card or CVV details.
               </span>
 
             </div>
@@ -843,17 +1059,21 @@ function Checkout() {
           </div>
 
 
-          {/* PLACE ORDER */}
+          {/* =================================================
+              PLACE ORDER
+          ================================================= */}
 
           <button
             type="submit"
             className="place-order-button"
+            disabled={processingPayment}
           >
 
-            Place Order 
-            {finalTotal}
-            {" "}
-            
+            {processingPayment
+              ? "Processing Payment..."
+              : `Place Order ₹${Number(
+                  finalTotal
+                ).toLocaleString("en-IN")} →`}
 
           </button>
 
@@ -861,7 +1081,9 @@ function Checkout() {
         </form>
 
 
-        {/* ORDER SUMMARY */}
+        {/* =================================================
+            ORDER SUMMARY
+        ================================================= */}
 
         <div className="checkout-summary">
 
@@ -879,11 +1101,13 @@ function Checkout() {
               >
 
                 <div className="checkout-product-image">
-  <img
-    src={item.image}
-    alt={item.name}
-  />
-</div>
+
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                  />
+
+                </div>
 
 
                 <div>
@@ -900,9 +1124,13 @@ function Checkout() {
 
 
                 <strong>
-                  
-                  {item.price *
-                    item.quantity}
+
+                  ₹
+                  {Number(
+                    item.price *
+                    item.quantity
+                  ).toLocaleString("en-IN")}
+
                 </strong>
 
               </div>
@@ -918,7 +1146,10 @@ function Checkout() {
             </span>
 
             <strong>
-              {cartTotal}
+              ₹
+              {Number(
+                cartTotal
+              ).toLocaleString("en-IN")}
             </strong>
 
           </div>
@@ -931,10 +1162,14 @@ function Checkout() {
             </span>
 
             <strong>
-  {deliveryCharge === 0
-    ? "FREE"
-    : `?${deliveryCharge}`}
-</strong>
+
+              {deliveryCharge === 0
+                ? "FREE"
+                : `₹${Number(
+                    deliveryCharge
+                  ).toLocaleString("en-IN")}`}
+
+            </strong>
 
           </div>
 
@@ -946,7 +1181,10 @@ function Checkout() {
             </span>
 
             <strong>
-              {finalTotal}
+              ₹
+              {Number(
+                finalTotal
+              ).toLocaleString("en-IN")}
             </strong>
 
           </div>
@@ -957,12 +1195,13 @@ function Checkout() {
             className="back-cart"
           >
 
-             Back to Cart
+            ← Back to Cart
 
           </Link>
 
 
         </div>
+
 
       </div>
 
@@ -974,8 +1213,3 @@ function Checkout() {
 
 
 export default Checkout;
-
-
-
-
-
