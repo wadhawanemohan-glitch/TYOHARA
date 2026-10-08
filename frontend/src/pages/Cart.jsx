@@ -49,7 +49,7 @@ function Cart() {
         {/* Cart Items */}
         <div className="cart-items">
           {cartItems.map((item) => (
-            <div className="cart-item" key={item.id}>
+            <div className="cart-item" key={item.productId ?? item.id}>
               <div className="cart-item-image">
                 <img
                   src={item.image}
@@ -66,7 +66,7 @@ function Cart() {
 
                 <button
                   className="remove-button"
-                  onClick={() => removeFromCart(item.id)}
+                  onClick={() => removeFromCart(item.productId ?? item.id)}
                 >
                   Remove
                 </button>
@@ -75,7 +75,7 @@ function Cart() {
               <div className="cart-item-actions">
                 <div className="cart-quantity">
                   <button
-                    onClick={() => decreaseQuantity(item.id)}
+                    onClick={() => decreaseQuantity(item.productId ?? item.id)}
                     aria-label="Decrease quantity"
                   >
                     −
@@ -84,7 +84,7 @@ function Cart() {
                   <span>{item.quantity}</span>
 
                   <button
-                    onClick={() => increaseQuantity(item.id)}
+                    onClick={() => increaseQuantity(item.productId ?? item.id)}
                     aria-label="Increase quantity"
                   >
                     +

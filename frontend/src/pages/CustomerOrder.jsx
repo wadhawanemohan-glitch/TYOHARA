@@ -56,7 +56,7 @@ function CustomerOrder() {
       >
         <input
           type="text"
-          placeholder="Enter Order ID e.g. GW03590134"
+          placeholder="Enter Order ID e.g. TY3F9A1C0B7D2E"
           value={orderId}
           onChange={(event) =>
             setOrderId(event.target.value)
@@ -101,9 +101,8 @@ function CustomerOrder() {
             <div>
               <span>Payment</span>
               <strong>
-                {order.paymentMethod === "cod"
-                  ? "Cash on Delivery"
-                  : "Online Payment"}
+                {order.paymentMethod}
+                {order.paymentStatus === "Paid" ? " (Paid)" : ""}
               </strong>
             </div>
 
@@ -144,15 +143,31 @@ function CustomerOrder() {
 
             <p>{order.customer.name}</p>
 
-            <p>{order.customer.address}</p>
+            {order.customer.address ? (
+              <>
+                <p>{order.customer.address}</p>
 
-            <p>
-              {order.customer.city},{" "}
-              {order.customer.state} -{" "}
-              {order.customer.pincode}
-            </p>
+                <p>
+                  {order.customer.city},{" "}
+                  {order.customer.state} -{" "}
+                  {order.customer.pincode}
+                </p>
 
-            <p> {order.customer.phone}</p>
+                <p>{order.customer.phone}</p>
+              </>
+            ) : (
+              <>
+                <p>
+                  {order.customer.city},{" "}
+                  {order.customer.state}
+                </p>
+
+                <p>
+                  Full address is hidden for privacy.
+                  Log in to see your complete order details.
+                </p>
+              </>
+            )}
 
           </div>
 

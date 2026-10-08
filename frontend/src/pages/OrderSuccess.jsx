@@ -9,7 +9,34 @@ function OrderSuccess() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL}/api/orders/${id}`)
+    // The secret key saved when the order was placed lets this
+    // browser see the full order details without logging in.
+    let key = "";
+
+    try {
+      const lastOrder = JSON.parse(
+        localStorage.getItem("giftwala-last-order") || "null"
+      );
+
+      if (lastOrder?.orderId === id && lastOrder.accessKey) {
+        key = lastOrder.accessKey;
+      }
+    } catch (error) {
+      console.error("Could not read saved order:", error);
+    }
+
+    const token = localStorage.getItem("giftwala-token");
+
+    fetch(
+      `${import.meta.env.VITE_API_URL}/api/orders/${encodeURIComponent(id)}${
+        key ? `?key=${encodeURIComponent(key)}` : ""
+      }`,
+      {
+        headers: token
+          ? { Authorization: `Bearer ${token}` }
+          : {}
+      }
+    )
       .then((response) => {
         if (!response.ok) {
           throw new Error("Order not found");
@@ -104,9 +131,8 @@ function OrderSuccess() {
             <span>Payment Method</span>
 
             <strong>
-              {order.paymentMethod === "cod"
-                ? "Cash on Delivery"
-                : "Online Payment"}
+              {order.paymentMethod}
+              {order.paymentStatus === "Paid" ? " (Paid)" : ""}
             </strong>
           </div>
 
@@ -128,19 +154,28 @@ function OrderSuccess() {
             {order.customer.name}
           </p>
 
-          <p>
-            {order.customer.address}
-          </p>
+          {order.customer.address ? (
+            <>
+              <p>
+                {order.customer.address}
+              </p>
 
-          <p>
-            {order.customer.city},{" "}
-            {order.customer.state} -{" "}
-            {order.customer.pincode}
-          </p>
+              <p>
+                {order.customer.city},{" "}
+                {order.customer.state} -{" "}
+                {order.customer.pincode}
+              </p>
 
-          <p>
-             {order.customer.phone}
-          </p>
+              <p>
+                {order.customer.phone}
+              </p>
+            </>
+          ) : (
+            <p>
+              {order.customer.city},{" "}
+              {order.customer.state}
+            </p>
+          )}
 
         </div>
 

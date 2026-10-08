@@ -126,54 +126,54 @@ function Checkout() {
 
 
   // =====================================================
-  // CREATE TYOHARA ORDER OBJECT
+  // BUILD ORDER REQUEST
+  // Only what the customer chose is sent. Product prices,
+  // delivery charge and the total are calculated again on
+  // the server, so they cannot be changed from the browser.
   // =====================================================
 
-  const createOrderData = (
-    orderId,
-    selectedPayment
+  const buildOrderItems = () =>
+    cartItems.map((item) => ({
+      productId: item.productId,
+      quantity: item.quantity
+    }));
+
+
+  const buildOrderRequest = (
+    selectedPayment,
+    razorpayProof
   ) => {
 
-    return {
-
-      orderId,
-
+    const request = {
       customer: formData,
-
-      items: cartItems.map(
-        (item) => ({
-
-          productId:
-            item.productId,
-
-          name:
-            item.name,
-
-          price:
-            item.price,
-
-          quantity:
-            item.quantity
-
-        })
-      ),
-
-      subtotal:
-        cartTotal,
-
-      delivery:
-        deliveryCharge,
-
-      total:
-        finalTotal,
-
-      paymentMethod:
-        selectedPayment,
-
-      orderDate:
-        new Date().toISOString()
-
+      items: buildOrderItems(),
+      paymentMethod: selectedPayment
     };
+
+    if (razorpayProof) {
+      request.razorpay = razorpayProof;
+    }
+
+    return request;
+
+  };
+
+
+  const getJsonHeaders = () => {
+
+    const headers = {
+      "Content-Type": "application/json"
+    };
+
+    // Logged-in customers: link the order to their account
+    const token =
+      localStorage.getItem("giftwala-token");
+
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+
+    return headers;
 
   };
 
@@ -183,32 +183,22 @@ function Checkout() {
   // =====================================================
 
   const saveOrder = async (
-    order
+    orderRequest
   ) => {
 
     const response =
       await fetch(
         `${import.meta.env.VITE_API_URL}/api/orders`,
         {
-
           method: "POST",
-
-          headers: {
-
-            "Content-Type":
-              "application/json"
-
-          },
-
-          body:
-            JSON.stringify(order)
-
+          headers: getJsonHeaders(),
+          body: JSON.stringify(orderRequest)
         }
       );
 
 
     const data =
-      await response.json();
+      await response.json().catch(() => ({}));
 
 
     if (
@@ -224,7 +214,28 @@ function Checkout() {
     }
 
 
-    return data;
+    return data.order;
+
+  };
+
+
+  // =====================================================
+  // ORDER PLACED: remember it, empty the cart, show success
+  // =====================================================
+
+  const finishOrder = (order) => {
+
+    // The order's secret key lets this browser open the
+    // order page without logging in.
+    localStorage.setItem(
+      "giftwala-last-order",
+      JSON.stringify(order)
+    );
+
+    clearCart();
+
+    window.location.href =
+      `/order-success/${order.orderId}`;
 
   };
 
@@ -233,31 +244,14 @@ function Checkout() {
   // COD ORDER
   // =====================================================
 
-  const handleCODOrder = async (
-    orderId
-  ) => {
+  const handleCODOrder = async () => {
 
     const order =
-      createOrderData(
-        orderId,
-        "Cash on Delivery"
+      await saveOrder(
+        buildOrderRequest("Cash on Delivery")
       );
 
-
-    await saveOrder(order);
-
-
-    localStorage.setItem(
-      "giftwala-last-order",
-      JSON.stringify(order)
-    );
-
-
-    clearCart();
-
-
-    window.location.href =
-      `/order-success/${orderId}`;
+    finishOrder(order);
 
   };
 
@@ -266,9 +260,7 @@ function Checkout() {
   // RAZORPAY PAYMENT
   // =====================================================
 
-  const handleOnlinePayment = async (
-    orderId
-  ) => {
+  const handleOnlinePayment = async () => {
 
     setProcessingPayment(true);
 
@@ -294,33 +286,26 @@ function Checkout() {
 
       // -------------------------------------------------
       // CREATE RAZORPAY ORDER
+      // The server works out the amount from the cart.
       // -------------------------------------------------
 
       const razorpayResponse =
         await fetch(
           `${import.meta.env.VITE_API_URL}/api/payment/create-order`,
           {
-
             method: "POST",
-
             headers: {
-
-              "Content-Type":
-                "application/json"
-
+              "Content-Type": "application/json"
             },
-
-            body:
-              JSON.stringify({
-                amount: finalTotal
-              })
-
+            body: JSON.stringify({
+              items: buildOrderItems()
+            })
           }
         );
 
 
       const razorpayData =
-        await razorpayResponse.json();
+        await razorpayResponse.json().catch(() => ({}));
 
 
       if (
@@ -334,6 +319,12 @@ function Checkout() {
         );
 
       }
+
+
+      const selectedPayment =
+        paymentMethod === "upi"
+          ? "UPI"
+          : "Credit / Debit Card";
 
 
       // -------------------------------------------------
@@ -375,14 +366,6 @@ function Checkout() {
         },
 
 
-        notes: {
-
-          tyohara_order_id:
-            orderId
-
-        },
-
-
         theme: {
 
           color:
@@ -391,6 +374,11 @@ function Checkout() {
         },
 
 
+        // -----------------------------------------------
+        // PAYMENT DONE: the server checks the signature and
+        // the amount, then saves the order as Paid.
+        // -----------------------------------------------
+
         handler:
           async function (
             response
@@ -398,122 +386,41 @@ function Checkout() {
 
             try {
 
-              // -----------------------------------------
-              // VERIFY PAYMENT ON BACKEND
-              // -----------------------------------------
-
-              const verifyResponse =
-                await fetch(
-                  `${import.meta.env.VITE_API_URL}/api/payment/verify`,
-                  {
-
-                    method: "POST",
-
-                    headers: {
-
-                      "Content-Type":
-                        "application/json"
-
-                    },
-
-                    body:
-                      JSON.stringify({
-
-                        razorpay_order_id:
-                          response.razorpay_order_id,
-
-                        razorpay_payment_id:
-                          response.razorpay_payment_id,
-
-                        razorpay_signature:
-                          response.razorpay_signature
-
-                      })
-
-                  }
-                );
-
-
-              const verifyData =
-                await verifyResponse.json();
-
-
-              if (
-                !verifyResponse.ok ||
-                !verifyData.success
-              ) {
-
-                throw new Error(
-                  verifyData.message ||
-                  "Payment verification failed."
-                );
-
-              }
-
-
-              // -----------------------------------------
-              // SAVE TYOHARA ORDER
-              // -----------------------------------------
-
               const order =
-                createOrderData(
-                  orderId,
-                  paymentMethod === "upi"
-                    ? "UPI"
-                    : "Credit / Debit Card"
+                await saveOrder(
+                  buildOrderRequest(
+                    selectedPayment,
+                    {
+                      order_id:
+                        response.razorpay_order_id,
+
+                      payment_id:
+                        response.razorpay_payment_id,
+
+                      signature:
+                        response.razorpay_signature
+                    }
+                  )
                 );
 
-
-              await saveOrder(order);
-
-
-              // -----------------------------------------
-              // SAVE LAST ORDER
-              // -----------------------------------------
-
-              localStorage.setItem(
-                "giftwala-last-order",
-                JSON.stringify({
-
-                  ...order,
-
-                  razorpayOrderId:
-                    response.razorpay_order_id,
-
-                  razorpayPaymentId:
-                    response.razorpay_payment_id
-
-                })
-              );
-
-
-              // -----------------------------------------
-              // CLEAR CART
-              // -----------------------------------------
-
-              clearCart();
-
-
-              // -----------------------------------------
-              // ORDER SUCCESS
-              // -----------------------------------------
-
-              window.location.href =
-                `/order-success/${orderId}`;
+              finishOrder(order);
 
             } catch (error) {
 
               console.error(
-                "Payment verification error:",
+                "Order save error after payment:",
                 error
               );
 
-
               alert(
-                error.message ||
-                "Payment verification failed."
+                (
+                  error.message ||
+                  "We could not confirm your order."
+                ) +
+                "\n\nIf money was deducted, please do NOT pay again. " +
+                "Contact support with this payment ID: " +
+                response.razorpay_payment_id
               );
-
 
               setProcessingPayment(false);
 
@@ -606,13 +513,6 @@ function Checkout() {
     }
 
 
-    const orderId =
-      "GW" +
-      Date.now()
-        .toString()
-        .slice(-8);
-
-
     try {
 
       // -------------------------------------------------
@@ -623,9 +523,9 @@ function Checkout() {
         paymentMethod === "cod"
       ) {
 
-        await handleCODOrder(
-          orderId
-        );
+        setProcessingPayment(true);
+
+        await handleCODOrder();
 
         return;
 
@@ -636,9 +536,7 @@ function Checkout() {
       // RAZORPAY
       // -------------------------------------------------
 
-      await handleOnlinePayment(
-        orderId
-      );
+      await handleOnlinePayment();
 
     } catch (error) {
 
