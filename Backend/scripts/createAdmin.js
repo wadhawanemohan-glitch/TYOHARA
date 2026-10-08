@@ -7,6 +7,9 @@
 // On Windows PowerShell:
 //   $env:ADMIN_EMAIL="you@example.com"; $env:ADMIN_PASSWORD="a-long-password"; node scripts/createAdmin.js
 //
+// To CHANGE the password of an account that already exists, also set
+// RESET_PASSWORD=true (PowerShell: $env:RESET_PASSWORD="true").
+//
 // MONGO_URI is read from Backend/.env. Never write real
 // passwords into this file or commit them to git.
 // =====================================================
@@ -58,11 +61,34 @@ const createAdmin = async () => {
     });
 
     if (existingAdmin) {
-      console.log(
-        "An account with this email already exists."
-      );
 
-      console.log("Role:", existingAdmin.role);
+      // To change the password of an existing account, run with
+      // RESET_PASSWORD=true (see usage at the top of this file).
+      if (process.env.RESET_PASSWORD !== "true") {
+        console.log(
+          "An account with this email already exists."
+        );
+
+        console.log("Role:", existingAdmin.role);
+
+        console.log(
+          "To set a new password for it, run again with RESET_PASSWORD=true."
+        );
+
+        process.exit(0);
+      }
+
+      existingAdmin.password =
+        await bcrypt.hash(adminPassword, 10);
+
+      existingAdmin.role = "admin";
+
+      await existingAdmin.save();
+
+      console.log(
+        "Password updated and role set to admin for:",
+        adminEmail
+      );
 
       process.exit(0);
     }
