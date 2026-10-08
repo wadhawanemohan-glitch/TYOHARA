@@ -35,6 +35,12 @@ const orderSchema = new mongoose.Schema(
       unique: true
     },
 
+    // Set when the customer was logged in while ordering
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User"
+    },
+
     customer: {
       name: {
         type: String,
@@ -96,19 +102,48 @@ const orderSchema = new mongoose.Schema(
       type: String,
       required: true
     },
+
+    // Cash on Delivery orders stay "Pending" until paid on delivery
+    paymentStatus: {
+      type: String,
+      enum: ["Pending", "Paid", "Failed", "Refunded"],
+      default: "Pending"
+    },
+
+    // Razorpay references (online payments only).
+    // Unique + sparse so one payment can only ever create one order.
+    razorpayOrderId: {
+      type: String,
+      unique: true,
+      sparse: true
+    },
+
+    razorpayPaymentId: {
+      type: String,
+      unique: true,
+      sparse: true
+    },
+
+    // Secret shown only to the person who placed the order, so
+    // they can open their order page without logging in.
+    accessKey: {
+      type: String,
+      select: false
+    },
+
     status: {
-  type: String,
-  enum: [
-    "Pending",
-    "Confirmed",
-    "Processing",
-    "Shipped",
-    "Out for Delivery",
-    "Delivered",
-    "Cancelled"
-  ],
-  default: "Pending"
-},
+      type: String,
+      enum: [
+        "Pending",
+        "Confirmed",
+        "Processing",
+        "Shipped",
+        "Out for Delivery",
+        "Delivered",
+        "Cancelled"
+      ],
+      default: "Pending"
+    },
 
     orderDate: {
       type: Date,

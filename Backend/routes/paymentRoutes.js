@@ -1,96 +1,92 @@
 const express = require("express");
-const crypto = require("crypto");
-const Razorpay = require("razorpay");
+
+const {
+  getRazorpay,
+  isValidSignature
+} = require("../config/razorpay");
+
+const config = require("../config/env");
+
+const {
+  priceCart,
+  CartError
+} = require("../utils/pricing");
 
 const router = express.Router();
 
 
 // =====================================================
-// RAZORPAY INSTANCE
-// =====================================================
-
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET
-});
-
-
-// =====================================================
 // CREATE RAZORPAY ORDER
+//
+// The customer sends the cart (productId + quantity only).
+// The amount is calculated here from real product prices,
+// so it cannot be changed from the browser.
 // =====================================================
 
 router.post("/create-order", async (req, res) => {
 
   try {
 
-    const { amount } = req.body;
+    const razorpay = getRazorpay();
 
-
-    if (!amount || Number(amount) <= 0) {
-
-      return res.status(400).json({
+    if (!razorpay) {
+      return res.status(503).json({
         success: false,
-        message: "Valid amount is required."
+        message: "Online payments are unavailable right now."
       });
-
     }
 
+    const pricing = await priceCart(req.body?.items);
 
-    const options = {
+    const order = await razorpay.orders.create({
 
-      amount:
-        Math.round(Number(amount) * 100),
+      amount: Math.round(pricing.total * 100),
 
       currency: "INR",
 
-      receipt:
-        "TYOHARA_" +
-        Date.now(),
+      receipt: "TYOHARA_" + Date.now(),
 
       payment_capture: 1
 
-    };
-
-
-    const order =
-      await razorpay.orders.create(
-        options
-      );
-
+    });
 
     return res.status(200).json({
 
       success: true,
 
       order: {
-
         id: order.id,
-
         amount: order.amount,
-
         currency: order.currency
-
       },
 
-      key:
-        process.env.RAZORPAY_KEY_ID
+      pricing: {
+        subtotal: pricing.subtotal,
+        delivery: pricing.delivery,
+        total: pricing.total
+      },
+
+      key: config.RAZORPAY_KEY_ID
 
     });
 
   } catch (error) {
 
+    if (error instanceof CartError) {
+      return res.status(error.status).json({
+        success: false,
+        message: error.message
+      });
+    }
+
     console.error(
       "Razorpay create order error:",
-      error
+      error?.error?.description || error.message
     );
 
     return res.status(500).json({
-
       success: false,
-
-      message:
-        "Unable to create Razorpay order."
-
+      message: "Unable to create Razorpay order."
     });
 
   }
@@ -99,105 +95,53 @@ router.post("/create-order", async (req, res) => {
 
 
 // =====================================================
-// VERIFY RAZORPAY PAYMENT
+// VERIFY RAZORPAY PAYMENT SIGNATURE
+//
+// Kept for compatibility. The final check (signature,
+// amount and paid status) happens again when the order
+// is saved in POST /api/orders.
 // =====================================================
 
-router.post("/verify", async (req, res) => {
+router.post("/verify", (req, res) => {
 
-  try {
+  const {
+    razorpay_order_id,
+    razorpay_payment_id,
+    razorpay_signature
+  } = req.body || {};
 
-    const {
-
-      razorpay_order_id,
-
-      razorpay_payment_id,
-
-      razorpay_signature
-
-    } = req.body;
-
-
-    if (
-      !razorpay_order_id ||
-      !razorpay_payment_id ||
-      !razorpay_signature
-    ) {
-
-      return res.status(400).json({
-
-        success: false,
-
-        message:
-          "Payment verification details are missing."
-
-      });
-
-    }
-
-
-    const generatedSignature =
-      crypto
-        .createHmac(
-          "sha256",
-          process.env.RAZORPAY_KEY_SECRET
-        )
-        .update(
-          `${razorpay_order_id}|${razorpay_payment_id}`
-        )
-        .digest("hex");
-
-
-    if (
-      generatedSignature !==
-      razorpay_signature
-    ) {
-
-      return res.status(400).json({
-
-        success: false,
-
-        message:
-          "Payment signature verification failed."
-
-      });
-
-    }
-
-
-    return res.status(200).json({
-
-      success: true,
-
-      message:
-        "Payment verified successfully.",
-
-      payment: {
-
-        razorpay_order_id,
-
-        razorpay_payment_id
-
-      }
-
-    });
-
-  } catch (error) {
-
-    console.error(
-      "Razorpay verification error:",
-      error
-    );
-
-    return res.status(500).json({
-
+  if (
+    !razorpay_order_id ||
+    !razorpay_payment_id ||
+    !razorpay_signature
+  ) {
+    return res.status(400).json({
       success: false,
-
-      message:
-        "Payment verification failed."
-
+      message: "Payment verification details are missing."
     });
-
   }
+
+  if (
+    !isValidSignature(
+      razorpay_order_id,
+      razorpay_payment_id,
+      razorpay_signature
+    )
+  ) {
+    return res.status(400).json({
+      success: false,
+      message: "Payment signature verification failed."
+    });
+  }
+
+  return res.status(200).json({
+    success: true,
+    message: "Payment verified successfully.",
+    payment: {
+      razorpay_order_id,
+      razorpay_payment_id
+    }
+  });
 
 });
 

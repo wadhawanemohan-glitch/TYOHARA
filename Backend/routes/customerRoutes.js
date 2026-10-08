@@ -129,7 +129,6 @@ router.get(
         success: false,
         message:
           "Failed to fetch customers",
-        error: error.message
       });
     }
   }

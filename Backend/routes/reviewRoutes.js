@@ -226,8 +226,6 @@ router.get(
         success: false,
         message:
           "Failed to check review status",
-        error:
-          error.message
       });
     }
   }
@@ -584,8 +582,6 @@ router.post(
         message:
           "Failed to submit review",
 
-        error:
-          error.message
 
       });
     }
