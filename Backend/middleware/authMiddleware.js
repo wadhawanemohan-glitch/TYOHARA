@@ -1,35 +1,32 @@
 const jwt = require("jsonwebtoken");
 
-const JWT_SECRET =
-  process.env.JWT_SECRET || "giftwala_secret_key";
+const { JWT_SECRET } = require("../config/env");
 
+
+const readToken = (req) => {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return null;
+  }
+
+  return authHeader.split(" ")[1] || null;
+};
+
+
+// Requires a valid login token
 const verifyToken = (req, res, next) => {
+  const token = readToken(req);
+
+  if (!token) {
+    return res.status(401).json({
+      success: false,
+      message: "Access denied. Login required."
+    });
+  }
+
   try {
-    const authHeader =
-      req.headers.authorization;
-
-    if (!authHeader) {
-      return res.status(401).json({
-        success: false,
-        message: "Access denied. Login required."
-      });
-    }
-
-    const token = authHeader.startsWith("Bearer ")
-      ? authHeader.split(" ")[1]
-      : null;
-
-    if (!token) {
-      return res.status(401).json({
-        success: false,
-        message: "Invalid authorization token."
-      });
-    }
-
-    const decoded =
-      jwt.verify(token, JWT_SECRET);
-
-    req.user = decoded;
+    req.user = jwt.verify(token, JWT_SECRET);
 
     next();
 
@@ -39,6 +36,22 @@ const verifyToken = (req, res, next) => {
       message: "Invalid or expired token."
     });
   }
+};
+
+
+// Uses the login token when present, but also allows guests
+const optionalAuth = (req, res, next) => {
+  const token = readToken(req);
+
+  if (token) {
+    try {
+      req.user = jwt.verify(token, JWT_SECRET);
+    } catch (error) {
+      // Invalid token: continue as a guest
+    }
+  }
+
+  next();
 };
 
 
@@ -63,5 +76,6 @@ const adminOnly = (req, res, next) => {
 
 module.exports = {
   verifyToken,
+  optionalAuth,
   adminOnly
 };

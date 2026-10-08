@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /admin-login
+Disallow: /profile
+Disallow: /my-orders
+Disallow: /cart
+Disallow: /checkout
+Disallow: /order-success/
+
+Sitemap: https://tyohara.vercel.app/sitemap.xml

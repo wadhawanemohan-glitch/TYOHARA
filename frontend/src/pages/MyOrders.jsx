@@ -92,7 +92,12 @@ const response =
   await fetch(
     `${import.meta.env.VITE_API_URL}/api/orders/customer/${encodeURIComponent(
       user.email
-    )}`
+    )}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }
   );
 
 

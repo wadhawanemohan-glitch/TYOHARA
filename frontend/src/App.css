@@ -91,12 +91,43 @@ a {
   width: 40px;
   height: 40px;
 
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
   border: none;
   border-radius: 50%;
 
   background: #f8f2ef;
+  color: #2b211d;
 
   font-size: 16px;
+  text-decoration: none;
+
+  cursor: pointer;
+}
+
+.icon-button:hover {
+  background: #f1e4dc;
+}
+
+/* Hamburger button: only visible on phones (see mobile rules at the end) */
+.menu-toggle {
+  display: none;
+
+  width: 40px;
+  height: 40px;
+
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  border-radius: 50%;
+
+  background: #f8f2ef;
+  color: #2b211d;
+
+  cursor: pointer;
 }
 
 .login-button {
@@ -1208,4 +1239,53 @@ section {
   font-weight: 700;
 
   line-height: 1;
+}
+
+
+/* =========================================================
+   MOBILE MENU (hamburger)
+   Placed last so it wins over the earlier mobile nav rules.
+   ========================================================= */
+
+@media (max-width: 760px) {
+
+  .header {
+    flex-wrap: wrap;
+
+    justify-content: space-between;
+
+    gap: 12px;
+  }
+
+  .menu-toggle {
+    display: inline-flex;
+
+    order: 5;
+  }
+
+  .nav {
+    display: none;
+
+    order: 3;
+
+    width: 100%;
+
+    flex-direction: column;
+    align-items: stretch;
+
+    gap: 0;
+  }
+
+  .nav.open {
+    display: flex;
+  }
+
+  .nav a {
+    padding: 13px 4px;
+
+    border-top: 1px solid #efe7e2;
+
+    font-size: 15px;
+    text-align: center;
+  }
 }

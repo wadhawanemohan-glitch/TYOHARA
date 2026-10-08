@@ -4,10 +4,24 @@ const jwt = require("jsonwebtoken");
 
 const User = require("../models/User");
 
+const {
+  JWT_SECRET,
+  JWT_EXPIRES_IN
+} = require("../config/env");
+
 const router = express.Router();
 
-const JWT_SECRET =
-  process.env.JWT_SECRET || "giftwala_secret_key";
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// bcrypt only uses the first 72 bytes of a password
+const MIN_PASSWORD_LENGTH = 8;
+const MAX_PASSWORD_LENGTH = 72;
+
+
+const cleanEmail = (value) =>
+  typeof value === "string"
+    ? value.trim().toLowerCase()
+    : "";
 
 
 // =========================
@@ -16,17 +30,47 @@ const JWT_SECRET =
 
 router.post("/register", async (req, res) => {
   try {
-    const {
-      name,
-      email,
-      password
-    } = req.body;
+
+    const name =
+      typeof req.body?.name === "string"
+        ? req.body.name.trim().replace(/\s+/g, " ")
+        : "";
+
+    const email = cleanEmail(req.body?.email);
+
+    const password = req.body?.password;
 
     if (!name || !email || !password) {
       return res.status(400).json({
         success: false,
         message:
           "Name, email and password are required"
+      });
+    }
+
+    if (name.length < 2 || name.length > 80) {
+      return res.status(400).json({
+        success: false,
+        message: "Name must be 2 to 80 characters"
+      });
+    }
+
+    if (!EMAIL_PATTERN.test(email) || email.length > 120) {
+      return res.status(400).json({
+        success: false,
+        message: "Please enter a valid email address"
+      });
+    }
+
+    if (
+      typeof password !== "string" ||
+      password.length < MIN_PASSWORD_LENGTH ||
+      password.length > MAX_PASSWORD_LENGTH
+    ) {
+      return res.status(400).json({
+        success: false,
+        message:
+          `Password must be ${MIN_PASSWORD_LENGTH} to ${MAX_PASSWORD_LENGTH} characters`
       });
     }
 
@@ -43,6 +87,8 @@ router.post("/register", async (req, res) => {
     const hashedPassword =
       await bcrypt.hash(password, 10);
 
+    // Role is never taken from the request: new accounts
+    // are always customers.
     const user = new User({
       name,
       email,
@@ -78,12 +124,11 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
 
-    const {
-      email,
-      password
-    } = req.body;
+    const email = cleanEmail(req.body?.email);
 
-    if (!email || !password) {
+    const password = req.body?.password;
+
+    if (!email || typeof password !== "string" || !password) {
       return res.status(400).json({
         success: false,
         message:
@@ -118,11 +163,12 @@ router.post("/login", async (req, res) => {
       jwt.sign(
         {
           userId: user._id,
+          email: user.email,
           role: user.role
         },
         JWT_SECRET,
         {
-          expiresIn: "1d"
+          expiresIn: JWT_EXPIRES_IN
         }
       );
 

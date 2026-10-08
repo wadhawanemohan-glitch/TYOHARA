@@ -86,7 +86,6 @@ router.get(
       res.status(500).json({
         success: false,
         message: "Failed to fetch product",
-        error: error.message
       });
 
     }
@@ -213,8 +212,6 @@ router.post(
         message:
           "Failed to add product",
 
-        error:
-          error.message
 
       });
 
@@ -338,8 +335,6 @@ router.put(
         message:
           "Failed to update product",
 
-        error:
-          error.message
 
       });
 
@@ -410,8 +405,6 @@ router.delete(
         message:
           "Failed to delete product",
 
-        error:
-          error.message
 
       });
 
