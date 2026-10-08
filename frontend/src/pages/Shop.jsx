@@ -23,6 +23,11 @@ function Shop() {
 
   const [sortBy, setSortBy] = useState("default");
 
+  // Text typed in the search box (can also come from ?q= in the URL)
+  const [searchText, setSearchText] = useState(
+    searchParams.get("q") || ""
+  );
+
   const [loading, setLoading] = useState(true);
 
   const [error, setError] = useState("");
@@ -62,6 +67,8 @@ function Shop() {
     } else {
       setSelectedCategory("All");
     }
+
+    setSearchText(searchParams.get("q") || "");
   }, [searchParams]);
 
 
@@ -119,6 +126,30 @@ if (selectedCategory === "All") {
       product.occasion === selectedCategory
   );
 }
+
+
+  // =========================
+  // SEARCH PRODUCTS
+  // =========================
+
+  const searchQuery = searchText.trim().toLowerCase();
+
+  if (searchQuery) {
+    filteredProducts = filteredProducts.filter(
+      (product) =>
+        [
+          product.name,
+          product.type,
+          product.category,
+          product.occasion,
+          product.description
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase()
+          .includes(searchQuery)
+    );
+  }
 
 
   // =========================
@@ -309,6 +340,21 @@ if (selectedCategory === "All") {
             )}
 
           </div>
+
+
+          {/* SEARCH */}
+
+          <input
+            type="search"
+            className="shop-search"
+            placeholder="Search gifts..."
+            aria-label="Search gifts"
+            value={searchText}
+            autoFocus={searchParams.get("focus") === "search"}
+            onChange={(event) =>
+              setSearchText(event.target.value)
+            }
+          />
 
 
           {/* SORT */}
