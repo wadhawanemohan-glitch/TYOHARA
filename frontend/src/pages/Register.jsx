@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
+import Turnstile from "../components/Turnstile";
+import { captchaEnabled } from "../captchaConfig";
+
 import "./Register.css";
 
 function Register() {
@@ -15,6 +18,9 @@ function Register() {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const [captchaToken, setCaptchaToken] = useState("");
+  const [captchaReset, setCaptchaReset] = useState(0);
 
   const handleChange = (event) => {
     setFormData({
@@ -36,10 +42,15 @@ function Register() {
       return;
     }
 
-    if (formData.password.length < 6) {
+    if (formData.password.length < 8) {
       setError(
-        "Password must be at least 6 characters."
+        "Password must be at least 8 characters."
       );
+      return;
+    }
+
+    if (captchaEnabled && !captchaToken) {
+      setError("Please complete the captcha.");
       return;
     }
 
@@ -56,7 +67,8 @@ function Register() {
           body: JSON.stringify({
             name: formData.name,
             email: formData.email,
-            password: formData.password
+            password: formData.password,
+            captchaToken
           })
         }
       );
@@ -68,6 +80,14 @@ function Register() {
           data.message ||
             "Registration failed."
         );
+      }
+
+      // Email verification is on: confirm the email with a code
+      if (data.verificationRequired) {
+        navigate("/verify-email", {
+          state: { email: data.email || formData.email }
+        });
+        return;
       }
 
       alert(
@@ -86,6 +106,10 @@ function Register() {
         error.message ||
           "Unable to create account."
       );
+
+      // A captcha token works only once
+      setCaptchaToken("");
+      setCaptchaReset((count) => count + 1);
 
     } finally {
       setLoading(false);
@@ -175,6 +199,11 @@ function Register() {
             value={formData.confirmPassword}
             onChange={handleChange}
             required
+          />
+
+          <Turnstile
+            onToken={setCaptchaToken}
+            resetKey={captchaReset}
           />
 
           <button
