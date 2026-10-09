@@ -6,6 +6,7 @@ Disallow: /profile
 Disallow: /my-orders
 Disallow: /cart
 Disallow: /checkout
+Disallow: /verify-email
 Disallow: /order-success/
 
 Sitemap: https://tyohara.vercel.app/sitemap.xml

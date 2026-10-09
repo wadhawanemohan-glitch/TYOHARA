@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
+import Turnstile from "../components/Turnstile";
+import { captchaEnabled } from "../captchaConfig";
+
 import "./Login.css";
 
 function Login() {
@@ -18,6 +21,12 @@ function Login() {
   const [error, setError] =
     useState("");
 
+  const [captchaToken, setCaptchaToken] =
+    useState("");
+
+  const [captchaReset, setCaptchaReset] =
+    useState(0);
+
   const handleChange = (event) => {
 
     setFormData({
@@ -34,6 +43,12 @@ function Login() {
     event.preventDefault();
 
     setError("");
+
+    if (captchaEnabled && !captchaToken) {
+      setError("Please complete the captcha.");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -48,12 +63,23 @@ function Login() {
               "application/json"
           },
 
-          body: JSON.stringify(formData)
+          body: JSON.stringify({
+            ...formData,
+            captchaToken
+          })
         }
       );
 
       const data =
         await response.json();
+
+      // Correct password, but the email was never confirmed
+      if (data.needsVerification) {
+        navigate("/verify-email", {
+          state: { email: data.email }
+        });
+        return;
+      }
 
       if (!response.ok || !data.success) {
         throw new Error(
@@ -91,6 +117,10 @@ function Login() {
         error.message ||
         "Unable to login"
       );
+
+      // A captcha token works only once
+      setCaptchaToken("");
+      setCaptchaReset((count) => count + 1);
 
     } finally {
 
@@ -162,6 +192,11 @@ function Login() {
             required
           />
 
+
+          <Turnstile
+            onToken={setCaptchaToken}
+            resetKey={captchaReset}
+          />
 
           <button
             type="submit"

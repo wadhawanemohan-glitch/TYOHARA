@@ -17,6 +17,9 @@ import Register from "./pages/Register";
 import Profile from "./pages/Profile";
 import MyOrders from "./pages/MyOrders";
 import AdminLogin from "./pages/AdminLogin";
+import VerifyEmail from "./pages/VerifyEmail";
+import RefundPolicy from "./pages/RefundPolicy";
+import siteConfig from "./siteConfig";
 
 import "./App.css";
 
@@ -743,7 +746,64 @@ function Home() {
             Track Order
           </Link>
 
+          <Link to="/refund-policy">
+            Refund Policy
+          </Link>
+
         </div>
+
+
+        {(siteConfig.instagramUrl ||
+          siteConfig.facebookUrl ||
+          siteConfig.whatsappNumber ||
+          siteConfig.supportEmail ||
+          siteConfig.supportPhone) && (
+          <div className="footer-links">
+
+            {siteConfig.instagramUrl && (
+              <a
+                href={siteConfig.instagramUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Instagram
+              </a>
+            )}
+
+            {siteConfig.facebookUrl && (
+              <a
+                href={siteConfig.facebookUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Facebook
+              </a>
+            )}
+
+            {siteConfig.whatsappNumber && (
+              <a
+                href={`https://wa.me/${siteConfig.whatsappNumber}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                WhatsApp
+              </a>
+            )}
+
+            {siteConfig.supportEmail && (
+              <a href={`mailto:${siteConfig.supportEmail}`}>
+                {siteConfig.supportEmail}
+              </a>
+            )}
+
+            {siteConfig.supportPhone && (
+              <span>
+                {siteConfig.supportPhone}
+              </span>
+            )}
+
+          </div>
+        )}
 
 
         <div className="copyright">
@@ -787,6 +847,16 @@ function App() {
         <Route
           path="/register"
           element={<Register />}
+        />
+
+        <Route
+          path="/verify-email"
+          element={<VerifyEmail />}
+        />
+
+        <Route
+          path="/refund-policy"
+          element={<RefundPolicy />}
         />
 
         <Route

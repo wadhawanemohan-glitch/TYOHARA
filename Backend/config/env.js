@@ -51,6 +51,25 @@ if (
 }
 
 
+// -----------------------------------------------------
+// Email verification (optional, off until configured)
+// Needs a Brevo account: BREVO_API_KEY and MAIL_FROM_EMAIL
+// (the sender address must be verified in Brevo).
+// -----------------------------------------------------
+const mailConfigured = Boolean(
+  process.env.BREVO_API_KEY && process.env.MAIL_FROM_EMAIL
+);
+
+const verificationRequested =
+  process.env.REQUIRE_EMAIL_VERIFICATION === "true";
+
+if (verificationRequested && !mailConfigured) {
+  console.warn(
+    "WARNING: REQUIRE_EMAIL_VERIFICATION=true but BREVO_API_KEY or MAIL_FROM_EMAIL is missing. Email verification stays OFF so customers can still sign up."
+  );
+}
+
+
 const toNumber = (value, fallback) => {
   const parsed = Number(value);
 
@@ -95,5 +114,19 @@ module.exports = {
   RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID || "",
 
   RAZORPAY_KEY_SECRET:
-    process.env.RAZORPAY_KEY_SECRET || ""
+    process.env.RAZORPAY_KEY_SECRET || "",
+
+  // New customers must confirm their email with a 6-digit code.
+  // Only active when REQUIRE_EMAIL_VERIFICATION=true AND mail is set up.
+  EMAIL_VERIFICATION_ENABLED: verificationRequested && mailConfigured,
+
+  BREVO_API_KEY: process.env.BREVO_API_KEY || "",
+
+  MAIL_FROM_EMAIL: process.env.MAIL_FROM_EMAIL || "",
+
+  MAIL_FROM_NAME: process.env.MAIL_FROM_NAME || "TYOHARA",
+
+  // Cloudflare Turnstile captcha for signup and login.
+  // Leave empty to keep the captcha off.
+  TURNSTILE_SECRET_KEY: process.env.TURNSTILE_SECRET_KEY || ""
 };

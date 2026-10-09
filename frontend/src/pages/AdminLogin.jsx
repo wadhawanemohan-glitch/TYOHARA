@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
+import Turnstile from "../components/Turnstile";
+import { captchaEnabled } from "../captchaConfig";
+
 import "./AdminLogin.css";
 
 function AdminLogin() {
@@ -14,6 +17,9 @@ function AdminLogin() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const [captchaToken, setCaptchaToken] = useState("");
+  const [captchaReset, setCaptchaReset] = useState(0);
+
   const handleChange = (event) => {
     setFormData({
       ...formData,
@@ -25,6 +31,12 @@ function AdminLogin() {
     event.preventDefault();
 
     setError("");
+
+    if (captchaEnabled && !captchaToken) {
+      setError("Please complete the captcha.");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -37,7 +49,8 @@ function AdminLogin() {
           },
           body: JSON.stringify({
             email: formData.email,
-            password: formData.password
+            password: formData.password,
+            captchaToken
           })
         }
       );
@@ -81,6 +94,10 @@ function AdminLogin() {
         error.message ||
         "Unable to login."
       );
+
+      // A captcha token works only once
+      setCaptchaToken("");
+      setCaptchaReset((count) => count + 1);
 
     } finally {
       setLoading(false);
@@ -147,6 +164,11 @@ function AdminLogin() {
             required
           />
 
+
+          <Turnstile
+            onToken={setCaptchaToken}
+            resetKey={captchaReset}
+          />
 
           <button
             type="submit"
