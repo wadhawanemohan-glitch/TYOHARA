@@ -59,7 +59,7 @@ const MyOrders = () => {
 
       const token =
         localStorage.getItem(
-          "giftwala-token"
+          "tyohara-token"
         );
 
 
@@ -78,7 +78,7 @@ const MyOrders = () => {
       const user =
   JSON.parse(
     localStorage.getItem(
-      "giftwala-user"
+      "tyohara-user"
     )
   );
 
@@ -175,7 +175,7 @@ const response =
 
       const token =
         localStorage.getItem(
-          "giftwala-token"
+          "tyohara-token"
         );
 
 
@@ -311,7 +311,7 @@ const response =
 
       const token =
         localStorage.getItem(
-          "giftwala-token"
+          "tyohara-token"
         );
 
 

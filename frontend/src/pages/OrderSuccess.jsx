@@ -15,7 +15,7 @@ function OrderSuccess() {
 
     try {
       const lastOrder = JSON.parse(
-        localStorage.getItem("giftwala-last-order") || "null"
+        localStorage.getItem("tyohara-last-order") || "null"
       );
 
       if (lastOrder?.orderId === id && lastOrder.accessKey) {
@@ -25,7 +25,7 @@ function OrderSuccess() {
       console.error("Could not read saved order:", error);
     }
 
-    const token = localStorage.getItem("giftwala-token");
+    const token = localStorage.getItem("tyohara-token");
 
     fetch(
       `${import.meta.env.VITE_API_URL}/api/orders/${encodeURIComponent(id)}${

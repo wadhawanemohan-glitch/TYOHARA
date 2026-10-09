@@ -23,7 +23,7 @@ const User = require("../models/User");
 
 const MONGO_URI =
   process.env.MONGO_URI ||
-  "mongodb://127.0.0.1:27017/GiftWalaDB";
+  "mongodb://127.0.0.1:27017/TYOHARADB";
 
 const adminEmail = (process.env.ADMIN_EMAIL || "")
   .trim()

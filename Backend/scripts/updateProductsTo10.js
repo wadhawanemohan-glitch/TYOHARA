@@ -127,7 +127,7 @@ const products = [
 
 const updateProducts = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI || "mongodb://127.0.0.1:27017/GiftWalaDB");
+    await mongoose.connect(process.env.MONGO_URI || "mongodb://127.0.0.1:27017/TYOHARADB");
 
     console.log("MongoDB Connected Successfully");
 

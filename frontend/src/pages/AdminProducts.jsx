@@ -108,7 +108,7 @@ const AdminProducts = () => {
 
       const token =
         localStorage.getItem(
-          "giftwala-token"
+          "tyohara-token"
         );
 
 

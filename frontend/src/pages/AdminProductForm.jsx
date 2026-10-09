@@ -204,7 +204,7 @@ stock:
 
       const token =
         localStorage.getItem(
-          "giftwala-token"
+          "tyohara-token"
         );
 
 
