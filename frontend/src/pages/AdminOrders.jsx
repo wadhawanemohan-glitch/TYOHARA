@@ -20,7 +20,7 @@ function AdminOrders() {
 
   const getToken = () => {
     return localStorage.getItem(
-      "giftwala-token"
+      "tyohara-token"
     );
   };
 

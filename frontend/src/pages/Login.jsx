@@ -66,12 +66,12 @@ function Login() {
       // Save login information
 
       localStorage.setItem(
-        "giftwala-token",
+        "tyohara-token",
         data.token
       );
 
       localStorage.setItem(
-        "giftwala-user",
+        "tyohara-user",
         JSON.stringify(data.user)
       );
 

@@ -5,7 +5,7 @@ import "./Profile.css";
 function Profile() {
   const navigate = useNavigate();
 
-  const savedUser = localStorage.getItem("giftwala-user");
+  const savedUser = localStorage.getItem("tyohara-user");
 
   const user = savedUser
     ? JSON.parse(savedUser)
@@ -33,8 +33,8 @@ function Profile() {
   }
 
   const handleLogout = () => {
-    localStorage.removeItem("giftwala-token");
-    localStorage.removeItem("giftwala-user");
+    localStorage.removeItem("tyohara-token");
+    localStorage.removeItem("tyohara-user");
 
     navigate("/");
   };

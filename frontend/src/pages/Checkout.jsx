@@ -167,7 +167,7 @@ function Checkout() {
 
     // Logged-in customers: link the order to their account
     const token =
-      localStorage.getItem("giftwala-token");
+      localStorage.getItem("tyohara-token");
 
     if (token) {
       headers.Authorization = `Bearer ${token}`;
@@ -228,7 +228,7 @@ function Checkout() {
     // The order's secret key lets this browser open the
     // order page without logging in.
     localStorage.setItem(
-      "giftwala-last-order",
+      "tyohara-last-order",
       JSON.stringify(order)
     );
 

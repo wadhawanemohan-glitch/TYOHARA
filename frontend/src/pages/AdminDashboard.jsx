@@ -14,7 +14,7 @@ function AdminDashboard() {
       setError("");
 
       const token =
-        localStorage.getItem("giftwala-token");
+        localStorage.getItem("tyohara-token");
 
       if (!token) {
         throw new Error(

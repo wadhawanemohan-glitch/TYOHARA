@@ -41,7 +41,7 @@ function Home() {
 
   useEffect(() => {
     const savedUser =
-      localStorage.getItem("giftwala-user");
+      localStorage.getItem("tyohara-user");
 
     if (savedUser) {
       try {
@@ -53,7 +53,7 @@ function Home() {
         );
 
         localStorage.removeItem(
-          "giftwala-user"
+          "tyohara-user"
         );
       }
     }
@@ -108,11 +108,11 @@ function Home() {
 
   const handleLogout = () => {
     localStorage.removeItem(
-      "giftwala-token"
+      "tyohara-token"
     );
 
     localStorage.removeItem(
-      "giftwala-user"
+      "tyohara-user"
     );
 
     setUser(null);
@@ -747,7 +747,7 @@ function Home() {
 
 
         <div className="copyright">
-          ÃƒÂ¯Ã‚Â¿Ã‚Â½ 2026 TYOHARA.
+          &copy; {new Date().getFullYear()} TYOHARA.
           All rights reserved.
         </div>
 

@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 const CartContext = createContext();
 
-const CART_STORAGE_KEY = "giftwala-cart";
+const CART_STORAGE_KEY = "tyohara-cart";
 
 // The server accepts at most 20 of one product per order
 const MAX_QUANTITY = 20;
