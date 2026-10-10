@@ -6,6 +6,7 @@ import {
 } from "react-router-dom";
 
 import { useCart } from "../context/CartContext";
+import { fetchWithTimeout } from "../utils/api";
 
 import "./Shop.css";
 
@@ -31,6 +32,7 @@ function Shop() {
   const [loading, setLoading] = useState(true);
 
   const [error, setError] = useState("");
+  const [retryCount, setRetryCount] = useState(0);
 
 
   // =========================
@@ -77,7 +79,11 @@ function Shop() {
   // =========================
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL}/api/products`)
+    let cancelled = false;
+
+    fetchWithTimeout(
+      `${import.meta.env.VITE_API_URL}/api/products`
+    )
       .then((response) => {
         if (!response.ok) {
           throw new Error(
@@ -88,22 +94,43 @@ function Shop() {
         return response.json();
       })
       .then((data) => {
+        if (cancelled) {
+          return;
+        }
+
         setProducts(data.products);
         setLoading(false);
       })
       .catch((error) => {
+        if (cancelled) {
+          return;
+        }
+
         console.error(
           "Error fetching products:",
           error
         );
 
         setError(
-          "Unable to load products."
+          error.name === "AbortError"
+            ? "The server is taking too long to respond. It may be starting up, so please try again in a minute."
+            : "Unable to load products. Please try again."
         );
 
         setLoading(false);
       });
-  }, []);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [retryCount]);
+
+
+  const handleRetry = () => {
+    setError("");
+    setLoading(true);
+    setRetryCount((count) => count + 1);
+  };
 
 
  // =========================
@@ -271,6 +298,25 @@ if (selectedCategory === "All") {
 
         <div className="product-count">
           {error}
+
+          <div>
+            <button
+              type="button"
+              onClick={handleRetry}
+              style={{
+                marginTop: "16px",
+                padding: "10px 24px",
+                border: "none",
+                borderRadius: "999px",
+                background: "#302722",
+                color: "#ffffff",
+                fontWeight: 600,
+                cursor: "pointer"
+              }}
+            >
+              Try again
+            </button>
+          </div>
         </div>
 
       </div>
