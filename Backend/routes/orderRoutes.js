@@ -62,7 +62,14 @@ const sendError = (res, error, fallbackMessage) => {
     });
   }
 
-  console.error(fallbackMessage, error.message);
+  // Full detail goes to the server log only (never to the customer)
+  console.error(
+    fallbackMessage + ":",
+    error.name,
+    error.code || "",
+    error.message,
+    error.keyPattern ? JSON.stringify(error.keyPattern) : ""
+  );
 
   return res.status(500).json({
     success: false,
@@ -259,10 +266,13 @@ router.post(
             throw error;
           }
 
-          // Same payment submitted twice at the same moment
+          // Same payment submitted twice at the same moment.
+          // Only online payments have a Razorpay ID to look up:
+          // a Cash on Delivery order must never match another order.
           if (
-            error.keyPattern?.razorpayOrderId ||
-            error.keyPattern?.razorpayPaymentId
+            paymentFields.razorpayOrderId &&
+            (error.keyPattern?.razorpayOrderId ||
+              error.keyPattern?.razorpayPaymentId)
           ) {
             const duplicate = await Order.findOne({
               razorpayOrderId: paymentFields.razorpayOrderId

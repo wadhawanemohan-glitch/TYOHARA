@@ -5,6 +5,7 @@ const express = require("express");
 const cors = require("cors");
 
 const connectMongoDB = require("./config/mongodb");
+const Order = require("./models/Order");
 
 const {
   securityHeaders,
@@ -131,6 +132,15 @@ app.use((error, req, res, next) => {
 const startServer = async () => {
   try {
     await connectMongoDB();
+
+    // Make the orders collection's indexes match the model. An old
+    // index that is not "sparse" makes every Cash on Delivery order
+    // after the first one fail, because they all have no payment ID.
+    try {
+      await Order.syncIndexes();
+    } catch (error) {
+      console.error("Order index sync failed:", error.message);
+    }
 
     app.listen(PORT, "0.0.0.0", () => {
       console.log(
