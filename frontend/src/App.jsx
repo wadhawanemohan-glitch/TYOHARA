@@ -19,6 +19,8 @@ import MyOrders from "./pages/MyOrders";
 import AdminLogin from "./pages/AdminLogin";
 import VerifyEmail from "./pages/VerifyEmail";
 import RefundPolicy from "./pages/RefundPolicy";
+import Customize from "./pages/Customize";
+import AdminCustomRequests from "./pages/AdminCustomRequests";
 import siteConfig from "./siteConfig";
 
 import "./App.css";
@@ -164,9 +166,9 @@ function Home() {
             Festivals
           </a>
 
-          <a href="#personalized">
-            Personalized Gifts
-          </a>
+          <Link to="/customize">
+            Customize a Gift
+          </Link>
 
           <Link to="/track-order">
             Track Order
@@ -615,12 +617,40 @@ function Home() {
 
 
       {/* =================================================
+          CUSTOM GIFT CALL TO ACTION
+      ================================================= */}
+
+      <section className="custom-cta" id="personalized">
+
+        <p>
+          MADE JUST FOR YOU
+        </p>
+
+        <h2>
+          Have a gift idea of your own?
+        </h2>
+
+        <span>
+          Tell us what you have in mind. We will design it,
+          share the price with you, and make it by hand.
+        </span>
+
+        <Link
+          to="/customize"
+          className="primary-button"
+        >
+          Customize Your Gift
+        </Link>
+
+      </section>
+
+
+      {/* =================================================
           WHY TYOHARA
       ================================================= */}
 
       <section
         className="why-us"
-        id="personalized"
       >
 
         <div className="section-heading">
@@ -738,9 +768,9 @@ function Home() {
             Festivals
           </a>
 
-          <a href="#personalized">
-            Personalized Gifts
-          </a>
+          <Link to="/customize">
+            Customize a Gift
+          </Link>
 
           <Link to="/track-order">
             Track Order
@@ -857,6 +887,16 @@ function App() {
         <Route
           path="/refund-policy"
           element={<RefundPolicy />}
+        />
+
+        <Route
+          path="/customize"
+          element={<Customize />}
+        />
+
+        <Route
+          path="/admin/custom-requests"
+          element={<AdminCustomRequests />}
         />
 
         <Route

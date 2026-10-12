@@ -1289,3 +1289,45 @@ section {
     text-align: center;
   }
 }
+
+
+/* ======================================================
+   CUSTOM GIFT CALL TO ACTION
+====================================================== */
+
+.custom-cta {
+  max-width: 1000px;
+  margin: 60px auto;
+  padding: 44px 24px;
+  text-align: center;
+  background: #f5e9df;
+  border-radius: 20px;
+}
+
+.custom-cta p {
+  letter-spacing: 3px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #8a5a3c;
+  margin: 0 0 8px;
+}
+
+.custom-cta h2 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 32px;
+  margin: 0 0 12px;
+  color: #302722;
+}
+
+.custom-cta span {
+  display: block;
+  max-width: 560px;
+  margin: 0 auto 22px;
+  line-height: 1.7;
+  color: #4a3f37;
+}
+
+.custom-cta .primary-button {
+  display: inline-block;
+  text-decoration: none;
+}
