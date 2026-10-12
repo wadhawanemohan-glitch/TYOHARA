@@ -3,7 +3,7 @@ import AdminProducts from "./pages/AdminProducts";
 import AdminCustomers from "./pages/AdminCustomers";
 import AdminDashboard from "./pages/AdminDashboard";
 import { useEffect, useState } from "react";
-import { BrowserRouter, Routes, Route, Link, useNavigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Link, Navigate, useNavigate } from "react-router-dom";
 import { useCart } from "./context/CartContext";
 import Shop from "./pages/Shop";
 import ProductDetails from "./pages/ProductDetails";
@@ -892,6 +892,12 @@ function App() {
         <Route
           path="/customize"
           element={<Customize />}
+        />
+
+        {/* /admin has no page of its own: send to the admin login */}
+        <Route
+          path="/admin"
+          element={<Navigate to="/admin-login" replace />}
         />
 
         <Route
