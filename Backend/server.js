@@ -17,6 +17,7 @@ const productRoutes = require("./routes/productRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const customerRoutes = require("./routes/customerRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");
+const customRequestRoutes = require("./routes/customRequestRoutes");
 
 const app = express();
 
@@ -87,6 +88,7 @@ app.use("/api/payment", paymentLimiter, paymentRoutes);
 app.use("/api/auth", authLimiter, authRoutes);
 app.use("/api/customers", customerRoutes);
 app.use("/api/reviews", reviewRoutes);
+app.use("/api/custom-requests", customRequestRoutes);
 
 
 // =========================

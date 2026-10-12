@@ -403,6 +403,25 @@ function AdminDashboard() {
               </Link>
 
               <Link
+                to="/admin/custom-requests"
+                className="quick-action"
+              >
+                <span>
+                  
+                </span>
+
+                <div>
+                  <strong>
+                    Custom Gift Requests
+                  </strong>
+
+                  <small>
+                    Ideas sent by customers
+                  </small>
+                </div>
+              </Link>
+
+              <Link
                 to="/"
                 className="quick-action"
               >
