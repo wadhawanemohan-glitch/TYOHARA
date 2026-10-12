@@ -403,6 +403,25 @@ function AdminDashboard() {
               </Link>
 
               <Link
+                to="/change-password"
+                className="quick-action"
+              >
+                <span>
+                  
+                </span>
+
+                <div>
+                  <strong>
+                    Change Password
+                  </strong>
+
+                  <small>
+                    Update your admin password
+                  </small>
+                </div>
+              </Link>
+
+              <Link
                 to="/admin/custom-requests"
                 className="quick-action"
               >

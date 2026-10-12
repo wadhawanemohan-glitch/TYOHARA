@@ -12,6 +12,8 @@ const {
 
 const { verifyCaptcha } = require("../utils/captcha");
 
+const { verifyToken } = require("../middleware/authMiddleware");
+
 const {
   MAX_ATTEMPTS,
   codeMatches,
@@ -442,6 +444,98 @@ router.post("/login", async (req, res) => {
     });
   }
 });
+
+
+// =========================
+// CHANGE PASSWORD (logged-in user)
+// =========================
+
+router.post(
+  "/change-password",
+  verifyToken,
+  async (req, res) => {
+    try {
+
+      const currentPassword = req.body?.currentPassword;
+      const newPassword = req.body?.newPassword;
+
+      if (
+        typeof currentPassword !== "string" ||
+        !currentPassword ||
+        typeof newPassword !== "string"
+      ) {
+        return res.status(400).json({
+          success: false,
+          message: "Current and new password are required"
+        });
+      }
+
+      // Admin accounts need a longer password
+      const minLength =
+        req.user.role === "admin" ? 12 : MIN_PASSWORD_LENGTH;
+
+      if (
+        newPassword.length < minLength ||
+        newPassword.length > MAX_PASSWORD_LENGTH
+      ) {
+        return res.status(400).json({
+          success: false,
+          message:
+            `New password must be ${minLength} to ${MAX_PASSWORD_LENGTH} characters`
+        });
+      }
+
+      if (newPassword === currentPassword) {
+        return res.status(400).json({
+          success: false,
+          message: "The new password must be different"
+        });
+      }
+
+      const user = await User.findById(req.user.userId);
+
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: "Account not found"
+        });
+      }
+
+      const matches = await bcrypt.compare(
+        currentPassword,
+        user.password
+      );
+
+      if (!matches) {
+        return res.status(401).json({
+          success: false,
+          message: "Current password is incorrect"
+        });
+      }
+
+      user.password = await bcrypt.hash(newPassword, 10);
+
+      await user.save();
+
+      res.json({
+        success: true,
+        message: "Password changed successfully"
+      });
+
+    } catch (error) {
+
+      console.error(
+        "Change password error:",
+        error.message
+      );
+
+      res.status(500).json({
+        success: false,
+        message: "Could not change password"
+      });
+    }
+  }
+);
 
 
 module.exports = router;

@@ -20,6 +20,7 @@ import AdminLogin from "./pages/AdminLogin";
 import VerifyEmail from "./pages/VerifyEmail";
 import RefundPolicy from "./pages/RefundPolicy";
 import Customize from "./pages/Customize";
+import ChangePassword from "./pages/ChangePassword";
 import AdminCustomRequests from "./pages/AdminCustomRequests";
 import siteConfig from "./siteConfig";
 
@@ -892,6 +893,11 @@ function App() {
         <Route
           path="/customize"
           element={<Customize />}
+        />
+
+        <Route
+          path="/change-password"
+          element={<ChangePassword />}
         />
 
         {/* /admin has no page of its own: send to the admin login */}
