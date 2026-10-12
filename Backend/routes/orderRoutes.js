@@ -303,30 +303,39 @@ router.post(
       // REDUCE STOCK (never below zero)
       // -----------------------------------------------
 
+      // The order is already saved, so a stock problem must never make
+      // the customer see a failure: it is only logged.
       await Promise.all(
-        pricing.lineItems.map((line) =>
-          Product.updateOne(
-            { productId: line.productId },
-            [
-              {
-                $set: {
-                  stock: {
-                    $max: [
-                      0,
-                      { $subtract: ["$stock", line.quantity] }
-                    ]
+        pricing.lineItems.map(async (line) => {
+
+          try {
+
+            await Product.updateOne(
+              { productId: line.productId },
+              [
+                {
+                  $set: {
+                    stock: {
+                      $max: [
+                        0,
+                        { $subtract: ["$stock", line.quantity] }
+                      ]
+                    }
                   }
                 }
-              }
-            ]
-          ).catch((error) =>
+              ],
+              { updatePipeline: true }
+            );
+
+          } catch (error) {
+
             console.error(
               "Stock update failed for product",
               line.productId,
               error.message
-            )
-          )
-        )
+            );
+          }
+        })
       );
 
 
