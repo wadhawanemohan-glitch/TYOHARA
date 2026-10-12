@@ -14,7 +14,7 @@ const siteConfig = {
   supportPhone: "7020487975",
 
   // WhatsApp number with country code, digits only. Example: "919876543210"
-  whatsappNumber: "7020487975",
+  whatsappNumber: "917020487975",
 
   // Full links, for example "https://www.instagram.com/yourpage"
   instagramUrl: "",
